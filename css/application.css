@@ -30,7 +30,6 @@
 .icon-brightness:before {
 	content: "\e604";
 }
-
 .icon-globe:before {
 	content: "\e600";
 }
@@ -74,18 +73,14 @@ html {
 
 #title-block {
 	width: 100%;
-	/*height: 8rem;*/
 	color: #FFFFFF;
 	background-color: #222222;
 }
 
 #title-block-text {
-	/*width: 70%;*/
 	margin-right: 4.5rem;
 	padding: 1rem;
 	background-color: #444444;
-	/*float: left;*/
-	/*display: inline-block;*/
 }
 
 #title {
@@ -105,7 +100,6 @@ html {
 	height: 100vh;
 	width: 4.5rem;
 	right: 0;
-	/*text-align: center;*/
 	color: #FFFFFF;
 	z-index: 100;
 	overflow: scroll;
@@ -132,12 +126,9 @@ html {
 	line-height: 0;
 	opacity: .5;
 }
-/*
-.control .control-icon:hover, .arrow:hover {
-	opacity: 1;
-}*/
 
-.control .control-icon:active, .arrow:active {
+.control .control-icon:active, 
+.arrow:active {
 	color: #00CCFF;
 	opacity: 1;
 }
@@ -166,13 +157,25 @@ html {
 }
 
 .buttons {
+	margin-right: 4.5rem;
+	padding: 1rem;
+	text-align: right;
+}
+
+.detail .buttons {
+	text-align: left;
+}
+
+.detail .return {
+	float: left;
+}
+
+.detail .select {
 	float: right;
-	margin: 0 1rem;
-	position: relative;
-	top: 1rem;
 }
 
 .button {
+	vertical-align: middle;
 	display: inline-block;
 	width: 5rem;
 	height: 5rem;
@@ -186,20 +189,27 @@ html {
 	background-color: #FFFFFF;
 }
 
-.expand, .select {
+.expand, .select, .return {
 	color: #000000;
 	font-size: 4rem;
+}
+
+.button span {
+	vertical-align: -14%;
 }
 
 .expand {
 }
 
 .select {
-
 }
 
-.color-bar span {
-	vertical-align: -14%;
+.return {
+	font-size: 3.75rem;
+}
+
+.return span {
+	vertical-align: -13%;
 }
 
 .sidebar-bg {
@@ -242,7 +252,6 @@ html {
 .control, .control-module {
 	margin: 2rem 0;
 	width: 100%;
-	/*background-color: pink;*/
 	text-align: center;
 }
 
@@ -270,6 +279,10 @@ html {
 	opacity: .6;
 }
 
+.bumper {
+	margin: 3.5rem 0 3rem 0;
+}
+
 .icon-layout {
 	font-size: 2.7rem;
 }
@@ -283,21 +296,20 @@ html {
 }
 
 .buttons {
-	float: right;
-	top: 3rem;
-	/*visibility: hidden;*/
 	opacity: 0;
-	margin: 0 4rem;
+	margin: 0 8rem 0 0;
+	padding: 3rem;
 	transition: opacity 0.3s ease
 }
 
 .color-bar:hover .buttons {
-	/*visibility: visible;*/
 	opacity: 1;
 	transition: opacity 0.3s ease
 }
 
 .button {
+	vertical-align: middle;
+	border-radius: 50px;
 	background-color: rgba(255, 255, 255, .5);
 }
 
