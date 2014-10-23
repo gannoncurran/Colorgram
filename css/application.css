@@ -1,0 +1,207 @@
+/* Icon font setup*/
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomoon.eot?-r70yb3');
+	src:url('../fonts/icomoon.eot?#iefix-r70yb3') format('embedded-opentype'),
+		url('../fonts/icomoon.woff?-r70yb3') format('woff'),
+		url('../fonts/icomoon.ttf?-r70yb3') format('truetype'),
+		url('../fonts/icomoon.svg?-r70yb3#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-pin-alt:before {
+	content: "\e603";
+}
+.icon-brightness:before {
+	content: "\e604";
+}
+.icon-globe:before {
+	content: "\e600";
+}
+.icon-checkmark:before {
+	content: "\e605";
+}
+.icon-arrow:before {
+	content: "\e606";
+}
+.icon-layout:before {
+	content: "\e608";
+}
+.icon-cloud:before {
+	content: "\e609";
+}
+.icon-arrow-left:before {
+	content: "\e60a";
+}
+.icon-arrow-down:before {
+	content: "\e60b";
+}
+.icon-arrow-up:before {
+	content: "\e60d";
+}
+.icon-ellipsis:before {
+	content: "\e60c";
+}
+
+/* apply a natural box layout model to all elements, but allowing components to change */
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+	font-family: 'Raleway', sans-serif;
+	font-weight: 400;
+	font-size: 16px;
+	background-color: #333333;
+}
+
+#title-block {
+	width: 70%;
+	color: #FFFFFF;
+	opacity: .75;
+	position: fixed;
+	top: 1.5rem;
+	left: 1rem;
+}
+
+#title {
+	font-weight: 800;
+	font-size: 2.6rem;
+	margin: 0;
+}
+
+#tagline {
+	font-size: 1.5rem;
+	font-weight: 400;
+	margin: .5rem .1rem;
+}
+
+#control-bar {
+	position: fixed;
+	width: 4.5rem;
+	right: 0;
+	text-align: center;
+	color: #FFFFFF;
+	z-index: 100;
+}
+
+#color-bars {
+
+}
+
+.color-bar {
+	height: 7rem;
+}
+
+.buttons {
+	float: left;
+	margin: 0 1.2rem;
+	position: relative;
+	top: 2rem;
+}
+
+.color-bar .button {
+	display: inline-block;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 50px;
+	background-color: #FFFFFF;
+	opacity: .4;
+	text-align: center;
+}
+
+.expand, .select {
+	color: #000000;
+	font-size: 2rem;
+}
+
+.expand {
+	margin-right: .8rem;
+}
+
+.select {
+
+}
+
+.color-bar span {
+	vertical-align: -25%;
+}
+
+.sidebar-bg {
+	width: 4.5rem;
+	height: 100%;
+	background-color: #000000;
+	opacity: .75;
+	display: inline-block;
+	float: right;
+	margin: 0;
+}
+
+@media only screen and (min-width: 767px) {
+
+#title-block {
+	pointer-events: none;
+}
+
+#title {
+	font-size: 9rem;
+}
+
+#tagline {
+	font-size: 2rem;
+	margin: .5rem .9rem;
+}
+
+#control-bar {
+	width: 8rem;
+}
+
+.color-bar {
+	height: 11rem;
+}
+
+.buttons {
+	float: right;
+	top: 4rem;
+	/*visibility: hidden;*/
+	opacity: 0;
+	margin: 0 4rem;
+	transition: opacity 0.5s ease
+
+}
+
+.color-bar:hover .buttons {
+	/*visibility: visible;*/
+	opacity: 1;
+	transition: opacity 0.5s ease
+}
+
+.button {
+	transition: opacity 0.5s ease
+}
+
+.button:hover {
+	opacity: 1;
+}
+
+.sidebar-bg {
+	width: 8rem;
+}
+
+}
