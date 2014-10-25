@@ -124,16 +124,18 @@ html {
 	background-image: url("../images/00_bg_dot.png");
 }
 
-#title {
+#title-block.picker #title {
 	font-weight: 800;
 	font-size: 2.6rem;
 	margin: 0;
+	opacity: .7;
 }
 
-.subtitle {
+#title-block.picker .subtitle {
 	font-size: 1.5rem;
 	font-weight: 400;
 	margin: .5rem .1rem;
+	opacity: .7;
 }
 
 #control-bar-bg {
@@ -277,10 +279,18 @@ html {
 	padding: 1rem 5.5rem 1rem 1rem;
 }
 
+#title-block.submit #title {
+	font-weight: 800;
+	font-size: 2.6rem;
+	margin: 0;
+	/*opacity: .5;*/
+}
+
 #title-block.submit .subtitle {
-	font-size: 1rem;
+	font-size: 1.5rem;
 	font-weight: 400;
 	margin: .5rem .1rem;
+	opacity: .5;
 }
 
 #color-form {
@@ -344,17 +354,23 @@ html {
 
 #title-block.recents {
 	color: #FFFFFF;
-	background-color: #222222;
-	/*opacity: .25;*/
 	padding: 1rem 5.5rem 1rem 1rem;
+	background-color: #222222;
 	background-image: url("../images/00_bg_dot.png");
+}
 
+#title-block.recents #title {
+	font-weight: 800;
+	font-size: 2.6rem;
+	margin: 0;
+	opacity: .7;
 }
 
 #title-block.recents .subtitle {
-	font-size: 1rem;
+	font-size: 1.5rem;
 	font-weight: 400;
 	margin: .5rem .1rem;
+	opacity: .7;
 }
 
 .tile {
@@ -366,7 +382,7 @@ html {
 
 .tile .color-name {
 	font-size: 1.3rem;
-	margin: 0 0 .75rem 0;
+	margin: 0 0 .7rem 0;
 }
 
 .tile .color-build {
@@ -379,6 +395,10 @@ html {
 	margin: 0;
 	letter-spacing: .5px;
 	margin: .6rem 0 0 0;
+}
+
+.tile .location {
+	margin: .2rem 0 .7rem 0;
 }
 
 /* ====================================*/
@@ -399,16 +419,18 @@ html {
 	background-image: none;
 	position: fixed;
 	width: 100%;
-	opacity: .85;
 }
 
-#title {
+#title-block.picker #title {
 	font-size: 7.4rem;
+	margin: 0 0 0 1.9rem;
+	opacity: .7;
 }
 
-.subtitle {
+#title-block.picker .subtitle {
 	font-size: 2rem;
-	margin: .5rem .9rem;
+	margin: .5rem 0 0 2.5rem;
+	opacity: .7;
 }
 
 #control-bar-bg {
@@ -536,15 +558,6 @@ html {
 /* SUBMIT VIEW DESKTOP */
 /* ====================================*/
 
-#title-block.submit {
-	position: relative;
-	padding-bottom: 2rem;
-}
-
-#title-block.submit .subtitle {
-	font-size: 1.75rem;
-}
-
 #color-form {
 	width: 100%;
 	padding: 1.2rem 10rem 0 1.9rem;
@@ -561,6 +574,25 @@ html {
 .fancy-form input {
 	font-size: 1.75rem;
 	font-weight: 400;
+}
+
+/* ====================================*/
+/* RECENTS GRID VIEW DESKTOP */
+/* ====================================*/
+
+.tile {
+	display: inline-block;
+	width: 30%;
+	height: 15rem;
+	float: left;
+	overflow: hidden;
+	padding: 1rem;
+
+}
+
+.tile:nth-child(3n) {
+	width: 40%;
+	padding-right: 9rem;
 }
 
 }
