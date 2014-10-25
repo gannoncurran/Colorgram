@@ -1,3 +1,24 @@
+/* TEMP -- REMOVE BEFORE DEPLOY */
+
+.pink {
+	background-color: pink;
+}
+.red {
+	background-color: red;
+}
+.green {
+	background-color: green;
+}
+.brown {
+	background-color: brown;
+}
+.orange {
+	background-color: orange;
+}
+.black {
+	background-color: black;
+}
+
 /* Icon font setup*/
 @font-face {
 	font-family: 'icomoon';
@@ -318,10 +339,47 @@ html {
 	color: #CC6600;
 }
 /* ====================================*/
-/* RECENTS VIEW MOBILE */
+/* RECENTS GRID VIEW MOBILE */
 /* ====================================*/
 
+#title-block.recents {
+	color: #FFFFFF;
+	background-color: #222222;
+	/*opacity: .25;*/
+	padding: 1rem 5.5rem 1rem 1rem;
+	background-image: url("../images/00_bg_dot.png");
 
+}
+
+#title-block.recents .subtitle {
+	font-size: 1rem;
+	font-weight: 400;
+	margin: .5rem .1rem;
+}
+
+.tile {
+	text-shadow: 0px 1px rgba(255, 255, 255, .25);
+	color: rgba(8, 8, 8, .6);
+	min-height: 10rem;
+	padding: 1rem 5.5rem 1rem 1rem;
+}
+
+.tile .color-name {
+	font-size: 1.3rem;
+	margin: 0 0 .75rem 0;
+}
+
+.tile .color-build {
+	margin: 0 0 .2rem 0;
+	font-weight: 400;
+	font-size: .9rem;
+}
+
+.tile .datetime {
+	margin: 0;
+	letter-spacing: .5px;
+	margin: .6rem 0 0 0;
+}
 
 /* ====================================*/
 /* ====================================*/
