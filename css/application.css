@@ -121,7 +121,6 @@ html {
 	color: #FFFFFF;
 	padding: 1rem 5.5rem 1rem 1rem;
 	background-color: #222222;
-	background-image: url("../images/00_bg_dot.png");
 }
 
 #title-block.picker #title {
@@ -154,7 +153,12 @@ html {
 	right: 0;
 	color: #FFFFFF;
 	z-index: 100;
-	overflow: scroll;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+#control-bar::-webkit-scrollbar { 
+    display: none; 
 }
 
 .control, .control-module {
@@ -348,15 +352,20 @@ html {
 .fancy-form.field-button p:active {
 	color: #CC6600;
 }
+
 /* ====================================*/
 /* RECENTS GRID VIEW MOBILE */
 /* ====================================*/
+
+#recents-grid {
+	background-color: #222222;
+	overflow: hidden;
+}
 
 #title-block.recents {
 	color: #FFFFFF;
 	padding: 1rem 5.5rem 1rem 1rem;
 	background-color: #222222;
-	background-image: url("../images/00_bg_dot.png");
 }
 
 #title-block.recents #title {
@@ -399,6 +408,51 @@ html {
 
 .tile .location {
 	margin: .2rem 0 .7rem 0;
+}
+
+/* ====================================*/
+/* COLOR MAP VIEW MOBILE */
+/* ====================================*/
+
+#title-block.color-map {
+	color: #FFFFFF;
+	padding: 1rem 5.5rem 1rem 1rem;
+	background-color: #222222;
+}
+
+#title-block.color-map #title {
+	font-weight: 800;
+	font-size: 2.6rem;
+	margin: 0;
+	opacity: .7;
+}
+
+#title-block.color-map .subtitle {
+	font-size: 1.5rem;
+	font-weight: 400;
+	margin: .5rem .1rem;
+	opacity: .7;
+}
+
+#map-container {
+	width: 100%;
+	height: 440px;
+	background-color: #333333;
+	overflow: scroll;
+}
+
+#map-container::-webkit-scrollbar { 
+    display: none; 
+}
+
+#map {
+	cursor: pointer;
+	height: 100%;
+	width: 400%;
+	background-image: url("../images/map.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	position: relative;
 }
 
 /* ====================================*/
@@ -594,5 +648,10 @@ html {
 	width: 40%;
 	padding-right: 9rem;
 }
+
+/* ====================================*/
+/* COLOR MAP VIEW DESKTOP */
+/* ====================================*/
+
 
 }
