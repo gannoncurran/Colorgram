@@ -58,7 +58,7 @@ Colorgram.View = (function() {
 
 	var pressInterval,
 			clickTimeout,
-			mobileView,
+			mobileView = false,
 			pickerSat = 50,
 			pickerLum = 50
 
@@ -254,12 +254,13 @@ Colorgram.View = (function() {
 	}
 
 	var	updateMobileViewStatus = function() {
+		var currentMobileStatus = mobileView
 		if ($win.width() < 767) {
 			mobileView = true
-	// TODO: RESET COLORBARS TO DEFAULT STATE WHEN SWITCHING TO MOBILE
 		} else {
 			mobileView = false
 		}
+		if (currentMobileStatus !== mobileView && mobileView) renderBaseColorbars()
 	}
 
 	var getTemplates = function() {
