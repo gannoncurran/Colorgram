@@ -62,6 +62,8 @@ Colorgram.View = (function() {
 			pickerSat = 50,
 			pickerLum = 50
 
+	var Templates = {}
+
 	var $win = $(window)
 
 	var viewComponents = {
@@ -99,7 +101,6 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				// lighten()
 				adjustPickerSL(0,1)
 				clickTimeout = window.setTimeout(function() { 
 					pressInterval = window.setInterval(function() {
@@ -122,7 +123,6 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				// darken()
 				adjustPickerSL(0,-1)
 				clickTimeout = window.setTimeout(function() { 
 					pressInterval = window.setInterval(function() {
@@ -145,7 +145,6 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				// saturate()
 				adjustPickerSL(1,0)
 				clickTimeout = window.setTimeout(function() { 
 					pressInterval = window.setInterval(function() {
@@ -168,7 +167,6 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				// desaturate()
 				adjustPickerSL(-1,0)	
 				clickTimeout = window.setTimeout(function() { 
 					pressInterval = window.setInterval(function() {
@@ -265,6 +263,20 @@ Colorgram.View = (function() {
 		}
 	}
 
+	var getTemplates = function() {
+		var colorBar 							= $('#color-bar-template')
+		var colorBarDetail 				= $('#color-bar-detail-template')
+		Templates.colorBar 				= $.trim(colorBar.html())
+		Templates.colorBarDetail 	= $.trim(colorBarDetail.html())
+		$(colorBar).remove()
+		$(colorBarDetail).remove()
+		console.log("template: ", Templates.colorBar, Templates.colorBarDetail)
+	}
+
+	var renderColorbars = function() {
+		
+	}
+
 	var bindListeners = function() {
 		for (var i in listeners) {
 			var listener = listeners[i]
@@ -274,6 +286,7 @@ Colorgram.View = (function() {
 
 	return {
 		init: function() {
+			getTemplates()
 			bindListeners()
 			updateMobileViewStatus()
 		}
@@ -306,11 +319,6 @@ Colorgram.initialize = function() {
 
 
 // var grayMapTheme = [{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]}]
-
-
-// Colorgram.map = (function() {
-
-// })
 
 
 
