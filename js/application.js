@@ -1,18 +1,5 @@
 var Colorgram = {}
 
-
-Colorgram.PageController = (function() {
-
-	return {
-		
-		init: function() {
-			console.log("page controller init fired")
-		},
-
-	}
-	
-})()
-
 Colorgram.Map = (function() {
 
 	return {
@@ -269,10 +256,15 @@ Colorgram.View = (function() {
 	var getTemplates = function() {
 		var colorBar 							= $('#color-bar-template')
 		var colorBarDetail 				= $('#color-bar-detail-template')
+		var recentsTile 					= $('#recents-tile-template')
+
 		Templates.colorBar 				= $.trim(colorBar.html())
 		Templates.colorBarDetail 	= $.trim(colorBarDetail.html())
+		Templates.recentsTile 	 	= $.trim(recentsTile.html())
+
 		$(colorBar).remove()
 		$(colorBarDetail).remove()
+		$(recentsTile).remove()
 	}
 
 	var renderBaseColorbars = function() {
@@ -329,6 +321,11 @@ Colorgram.View = (function() {
 		}
 	}
 
+	$(document).ready(function() {
+		console.log("document ready fired")
+		Colorgram.initialize()
+	});
+
 	return {
 		init: function() {
 			getTemplates()
@@ -342,11 +339,6 @@ Colorgram.View = (function() {
 
 
 Colorgram.initialize = function() {
-
-	console.log("Colorgram Initializing")
-
-	console.log("Loading page controller")
-	Colorgram.PageController.init()
 
 	console.log("Initializing google map and places autocomplete")
 	Colorgram.Map.init()
@@ -369,7 +361,3 @@ Colorgram.initialize = function() {
 
 
 
-$(document).ready(function() {
-	console.log("document ready fired")
-	Colorgram.initialize()
-});
