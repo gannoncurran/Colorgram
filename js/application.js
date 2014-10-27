@@ -357,9 +357,9 @@ Colorgram.initialize = function() {
 	console.log("Initializing view")
 	Colorgram.View.init()
 
-	console.log("Testing colorgram model")
-	var grams = Colorgram.Model.allColorgrams()
-	console.log(grams)
+	// console.log("Testing colorgram model")
+	// var grams = Colorgram.Model.allColorgrams()
+	// console.log(grams)
 }
 
 
