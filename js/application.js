@@ -205,7 +205,6 @@ Colorgram.View = (function() {
 			id: $win,
 			browserEvent: "scroll",
 			fn: function(e) {
-				console.log($win.scrollTop())
 				rotateColorbars()
 			}
 		},
@@ -257,7 +256,7 @@ Colorgram.View = (function() {
 	var	updateMobileViewStatus = function() {
 		if ($win.width() < 767) {
 			mobileView = true
-			// TODO: RESET COLORBARS TO DEFAULT STATE WHEN SWITCHING TO MOBILE
+	// TODO: RESET COLORBARS TO DEFAULT STATE WHEN SWITCHING TO MOBILE
 		} else {
 			mobileView = false
 		}
@@ -270,11 +269,23 @@ Colorgram.View = (function() {
 		Templates.colorBarDetail 	= $.trim(colorBarDetail.html())
 		$(colorBar).remove()
 		$(colorBarDetail).remove()
-		console.log("template: ", Templates.colorBar, Templates.colorBarDetail)
 	}
 
-	var renderColorbars = function() {
-		
+	var renderBaseColorbars = function() {
+		var cbBaseSpread = 20
+		var sat = 50
+		var lum = 50
+		var bar
+		var fadeDelay = 0
+		$(".color-bar").remove()
+		for (var hue = 0; hue < 360; hue +=cbBaseSpread) {
+			bar = $(Templates.colorBar)
+			$(bar).css("background-color", "hsl(" + hue + "," + sat + "%," + lum + "%)")
+			$(bar).attr("data-hue", hue)
+			$(bar).hide().appendTo("#color-bars").delay(fadeDelay).fadeIn(500)
+			fadeDelay += 75
+		}
+
 	}
 
 	var bindListeners = function() {
@@ -287,6 +298,7 @@ Colorgram.View = (function() {
 	return {
 		init: function() {
 			getTemplates()
+			renderBaseColorbars()
 			bindListeners()
 			updateMobileViewStatus()
 		}

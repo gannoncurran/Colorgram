@@ -125,6 +125,16 @@ html {
 	position: relative;
 }
 
+header {
+	z-index: 200;
+	position: relative;
+}
+
+nav {
+	z-index: 250;
+	position: relative;
+}
+
 #title-block.picker {
 	color: #FFFFFF;
 	padding: 1rem 5.5rem 1rem 1rem;
@@ -152,6 +162,8 @@ html {
 	opacity: .8;
 	width: 4.5rem;
 	height: 100%;
+	z-index: 225;
+	pointer-events: none;
 }
 
 #control-bar {
@@ -160,7 +172,7 @@ html {
 	width: 4.5rem;
 	right: 0;
 	color: #FFFFFF;
-	z-index: 100;
+	/*z-index: 100;*/
 	overflow-x: hidden;
 	overflow-y: scroll;
 }
@@ -217,7 +229,8 @@ html {
 }
 
 #color-bars {
-
+	position: relative;
+	z-index: 50;
 }
 
 .color-bar {
