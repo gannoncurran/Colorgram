@@ -56,9 +56,23 @@ Colorgram.Model = (function() {
 
 Colorgram.View = (function() {
 
-	var interval
+	var pressInterval,
+			clickTimeout,
+			mobileView,
+			pickerSat = 50,
+			pickerLum = 50
 
-	var buttons = [
+	var $win = $(window)
+
+	var viewComponents = {
+		nav: "#control-bar",
+		picker: "#color-bars",
+		form: "#color-form",
+		recents: "#recents-grid",
+		map: "#map-container"
+	}
+
+	var listeners = [
 		{
 			id: "#button-picker",
 			browserEvent: "click",
@@ -66,7 +80,6 @@ Colorgram.View = (function() {
 				console.log("color picker button clicked")
 			}
 		},
-
 		{
 			id: "#button-recents",
 			browserEvent: "click",
@@ -74,7 +87,6 @@ Colorgram.View = (function() {
 				console.log("recents button clicked")
 			}
 		},
-
 		{
 			id: "#button-map",
 			browserEvent: "click",
@@ -82,81 +94,202 @@ Colorgram.View = (function() {
 				console.log("map button clicked")
 			}
 		},
-
 		{
 			id: "#button-brightup",
-			browserEvent: "click",
+			browserEvent: "mousedown touchstart",
 			fn: function(e) {
-				console.log("brighten button clicked")
+				e.preventDefault()
+				lighten()
+				clickTimeout = window.setTimeout(function() { 
+					pressInterval = window.setInterval(lighten, 20) 
+				}, 500)
 			}
 		},
-
+		{
+			id: "#button-brightup",
+			browserEvent: "mouseup touchend",
+			fn: function(e) {
+				e.preventDefault()
+				window.clearTimeout(clickTimeout)
+				window.clearInterval(pressInterval)
+			}
+		},
 		{
 			id: "#button-brightdn",
-			browserEvent: "click",
+			browserEvent: "mousedown touchstart",
 			fn: function(e) {
-				console.log("dim button clicked")
+				e.preventDefault()
+				darken()
+				clickTimeout = window.setTimeout(function() { 
+					pressInterval = window.setInterval(darken, 20) 
+				}, 500)
 			}
 		},
-
+		{
+			id: "#button-brightdn",
+			browserEvent: "mouseup touchend",
+			fn: function(e) {
+				e.preventDefault()
+				window.clearTimeout(clickTimeout)
+				window.clearInterval(pressInterval)
+			}
+		},
 		{
 			id: "#button-satup",
-			browserEvent: "click",
+			browserEvent: "mousedown touchstart",
 			fn: function(e) {
-				console.log("saturate button clicked")
+				e.preventDefault()
+				saturate()
+				clickTimeout = window.setTimeout(function() { 
+					pressInterval = window.setInterval(saturate, 20) 
+				}, 500)
 			}
 		},
-
+		{
+			id: "#button-satup",
+			browserEvent: "mouseup touchend",
+			fn: function(e) {
+				e.preventDefault()
+				window.clearTimeout(clickTimeout)
+				window.clearInterval(pressInterval)
+			}
+		},
 		{
 			id: "#button-satdn",
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				console.log("desaturate button pressed")
 				desaturate()
-				interval = window.setInterval(desaturate, 200)
+				clickTimeout = window.setTimeout(function() { 
+					pressInterval = window.setInterval(desaturate, 20) 
+				}, 500)
 			}
 		},
-
 		{
 			id: "#button-satdn",
 			browserEvent: "mouseup touchend",
 			fn: function(e) {
 				e.preventDefault()
-				console.log("desaturate button released")
-				window.clearInterval(interval, 500)
+				window.clearTimeout(clickTimeout)
+				window.clearInterval(pressInterval)
 			}
 		},
+		{
+			id: "#color-bars",
+			browserEvent: "click",
+			fn: function(e) {
+				e.preventDefault()
+				var classes = e.target.parentNode.className
 
-		// {
-		// 	id: "#button-satdn",
-		// 	browserEvent: "click",
-		// 	fn: function(e) {
-		// 		console.log("desaturate button clicked")
-		// 		desaturate()
-		// 	}
-		// }
+				if (classes.indexOf("select") > -1) {
+					console.log('select was clicked')
+				} else if (classes.indexOf("return") > -1) {
+					console.log('return was clicked')
+				} else if (classes.indexOf("expand") > -1) {
+					console.log('expand was clicked')
+				}
 
+			}
+		},
+		{
+			id: $win,
+			browserEvent: "scroll",
+			fn: function(e) {
+				console.log($win.scrollTop())
+				rotateColorbars()
+			}
+		},
+		{
+			id: $win,
+			browserEvent: "resize",
+			fn: function(e) {
+				updateMobileViewStatus()
+			}
+		}
 	]
 
+	var lighten = function() {
+		console.log("lightening!")
+		if (pickerLum < 100) {
+			pickerLum ++
+			$(".color-bar").each(function(i){
+				var hue = this.dataset.hue
+				this.dataset.lum = pickerLum
+				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
+			})
+		} 	
+	}
+
+	var darken = function() {
+		console.log("darkening!")
+		if (pickerLum > 0) {
+			pickerLum --
+			$(".color-bar").each(function(i){
+				var hue = this.dataset.hue
+				this.dataset.lum = pickerLum
+				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
+			})
+		} 	
+	}
+
 	var saturate = function() {
-		console.log("desaturating!")
+		console.log("saturating!")
+		if (pickerSat < 100) {
+			pickerSat ++
+			$(".color-bar").each(function(i){
+				var hue = this.dataset.hue
+				this.dataset.sat = pickerSat
+				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
+			})
+		} 	
 	}
 
 	var desaturate = function() {
 		console.log("desaturating!")
+		if (pickerSat > 0) {
+			pickerSat --
+			$(".color-bar").each(function(i){
+				var hue = this.dataset.hue
+				this.dataset.sat = pickerSat
+				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
+			})
+		} 		
+	}
+
+	var rotateColorbars = function() {
+		var $currentWinTop = $win.scrollTop()
+		var $bodyHeight = $("html").height()
+		if (!mobileView && $win.height() < $bodyHeight && $currentWinTop <= 0) {
+			var $lastBar = $(".color-bar").last()
+			$("#color-bars").prepend($lastBar)
+			$win.scrollTop($currentWinTop + $lastBar.height())
+		} else if (!mobileView && $win.height() < $bodyHeight && ($win.height() + $currentWinTop >= $bodyHeight)) {
+			var $firstBar = $(".color-bar").first()
+			$("#color-bars").append($firstBar)
+			$win.scrollTop($currentWinTop - $firstBar.height())
+		}
+	}
+
+	var	updateMobileViewStatus = function() {
+		if ($win.width() < 767) {
+			mobileView = true
+			// TODO: RESET COLORBARS TO DEFAULT STATE WHEN SWITCHING TO MOBILE
+		} else {
+			mobileView = false
+		}
 	}
 
 	var bindListeners = function() {
-		for (var i in buttons) {
-			var button = buttons[i]
-			$(button.id).on(button.browserEvent, button.fn)
+		for (var i in listeners) {
+			var listener = listeners[i]
+			$(listener.id).on(listener.browserEvent, listener.fn)
 		}
 	}
 
 	return {
 		init: function() {
 			bindListeners()
+			updateMobileViewStatus()
 		}
 	}
 	
@@ -164,6 +297,7 @@ Colorgram.View = (function() {
 
 
 Colorgram.initialize = function() {
+
 	console.log("Colorgram Initializing")
 
 	console.log("Loading page controller")
