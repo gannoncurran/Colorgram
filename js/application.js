@@ -99,9 +99,12 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				lighten()
+				// lighten()
+				adjustPickerSL(0,1)
 				clickTimeout = window.setTimeout(function() { 
-					pressInterval = window.setInterval(lighten, 20) 
+					pressInterval = window.setInterval(function() {
+						adjustPickerSL(0,1)
+					}, 20) 
 				}, 500)
 			}
 		},
@@ -119,9 +122,12 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				darken()
+				// darken()
+				adjustPickerSL(0,-1)
 				clickTimeout = window.setTimeout(function() { 
-					pressInterval = window.setInterval(darken, 20) 
+					pressInterval = window.setInterval(function() {
+						adjustPickerSL(0,-1)
+					}, 20) 
 				}, 500)
 			}
 		},
@@ -139,9 +145,12 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				saturate()
+				// saturate()
+				adjustPickerSL(1,0)
 				clickTimeout = window.setTimeout(function() { 
-					pressInterval = window.setInterval(saturate, 20) 
+					pressInterval = window.setInterval(function() {
+						adjustPickerSL(1,0)
+					}, 20) 
 				}, 500)
 			}
 		},
@@ -159,9 +168,12 @@ Colorgram.View = (function() {
 			browserEvent: "mousedown touchstart",
 			fn: function(e) {
 				e.preventDefault()
-				desaturate()
+				// desaturate()
+				adjustPickerSL(-1,0)	
 				clickTimeout = window.setTimeout(function() { 
-					pressInterval = window.setInterval(desaturate, 20) 
+					pressInterval = window.setInterval(function() {
+						adjustPickerSL(-1,0)
+					}, 20) 
 				}, 500)
 			}
 		},
@@ -208,52 +220,26 @@ Colorgram.View = (function() {
 		}
 	]
 
-	var lighten = function() {
-		console.log("lightening!")
-		if (pickerLum < 100) {
-			pickerLum ++
-			$(".color-bar").each(function(i){
-				var hue = this.dataset.hue
-				this.dataset.lum = pickerLum
-				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
-			})
-		} 	
-	}
-
-	var darken = function() {
-		console.log("darkening!")
-		if (pickerLum > 0) {
-			pickerLum --
-			$(".color-bar").each(function(i){
-				var hue = this.dataset.hue
-				this.dataset.lum = pickerLum
-				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
-			})
-		} 	
-	}
-
-	var saturate = function() {
-		console.log("saturating!")
-		if (pickerSat < 100) {
-			pickerSat ++
+	var adjustPickerSL = function(satChange, lumChange) {
+		if (satChange === 0 && lumChange === 0) return
+		var newPickerSat = pickerSat + satChange
+		var newPickerLum = pickerLum + lumChange
+		if (newPickerSat >= 0 && newPickerSat <= 100) {
+			pickerSat = newPickerSat
 			$(".color-bar").each(function(i){
 				var hue = this.dataset.hue
 				this.dataset.sat = pickerSat
 				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
 			})
-		} 	
-	}
-
-	var desaturate = function() {
-		console.log("desaturating!")
-		if (pickerSat > 0) {
-			pickerSat --
+		}
+		if (newPickerLum >= 0 && newPickerLum <= 100) {
+			pickerLum = newPickerLum
 			$(".color-bar").each(function(i){
 				var hue = this.dataset.hue
-				this.dataset.sat = pickerSat
+				this.dataset.lum = pickerLum
 				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
 			})
-		} 		
+		}
 	}
 
 	var rotateColorbars = function() {

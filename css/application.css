@@ -95,8 +95,16 @@
 /* UTILS */
 /* ====================================*/
 
+.display {
+	display: block;
+}
+
 .nodisplay {
 	display: none;
+}
+
+.visible {
+	visibility: visible;
 }
 
 .invisible {
@@ -185,6 +193,7 @@ html {
 .control .control-icon:active, 
 .arrow:active {
 	color: #00CCFF;
+	text-shadow: 0px 0px 20px #FFFFFF;
 	opacity: 1;
 }
 
@@ -520,6 +529,7 @@ html {
 .control .control-icon:active,
 .arrow:active {
 	color: #00CCFF;
+	text-shadow: none;
 }
 
 .control-icon {
