@@ -189,14 +189,17 @@ Colorgram.View = (function() {
 			browserEvent: "click",
 			fn: function(e) {
 				e.preventDefault()
+				var baseColorBar = $(e.target).parents(".color-bar").first()
 				var classes = e.target.parentNode.className
 
 				if (classes.indexOf("select") > -1) {
 					console.log('select was clicked')
 				} else if (classes.indexOf("return") > -1) {
 					console.log('return was clicked')
+					renderBaseColorbars()
 				} else if (classes.indexOf("expand") > -1) {
 					console.log('expand was clicked')
+					expandColorBars(baseColorBar)
 				}
 
 			}
@@ -286,7 +289,37 @@ Colorgram.View = (function() {
 			$(bar).hide().appendTo("#color-bars").delay(fadeDelay).fadeIn(500)
 			fadeDelay += 75
 		}
+	}
 
+	var expandColorBars = function(baseColorBar) {
+		var cbDetailCount = 20
+		var baseHue = $(baseColorBar).data("hue")
+		var detailBar = $(Templates.colorBarDetail)
+		var barHeight = $(".color-bar").first().height()
+		console.log("barheight:",barHeight)
+		var anchorIndex = $(baseColorBar).index() + 1
+
+		$(detailBar).attr("data-hue", baseHue)
+		$(detailBar).attr("data-base", baseHue)
+
+		$(detailBar).css("background-color", "hsl(" + baseHue + "," + pickerSat + "%," + pickerLum + "%)")
+		$(baseColorBar).replaceWith(detailBar)
+
+		var $anchor = $("#color-bars .color-bar:nth-child("+anchorIndex+")")
+		console.log($anchor)
+
+		for (var hue = baseHue + cbDetailCount - 1 ; hue > baseHue; hue --) {
+			detailBar = $(Templates.colorBarDetail)
+			$(detailBar).attr("data-hue", hue)
+			$(detailBar).attr("data-base", baseHue)
+			$(detailBar).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
+			if (mobileView) {
+				$(detailBar).insertAfter($anchor)
+			} else {
+				$(detailBar).height(0)
+				$(detailBar).insertAfter($anchor).animate({height: barHeight}, 800)
+			}
+		}
 	}
 
 	var bindListeners = function() {
