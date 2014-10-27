@@ -47,7 +47,8 @@ Colorgram.View = (function() {
 			clickTimeout,
 			mobileView = false,
 			pickerSat = 50,
-			pickerLum = 50
+			pickerLum = 50,
+			cbBaseInterval = 20
 
 	var Templates = {}
 
@@ -183,7 +184,8 @@ Colorgram.View = (function() {
 					console.log('select was clicked')
 				} else if (classes.indexOf("return") > -1) {
 					console.log('return was clicked')
-					renderBaseColorbars()
+					// renderBaseColorbars()
+					collapseColorBarsDetail(baseColorBar.data("base"))
 				} else if (classes.indexOf("expand") > -1) {
 					console.log('expand was clicked')
 					expandColorBars(baseColorBar)
@@ -230,16 +232,16 @@ Colorgram.View = (function() {
 	}
 
 	var rotateColorbars = function() {
-		var $currentWinTop = $win.scrollTop()
+		var currentWinTop = $win.scrollTop()
 		var $bodyHeight = $("html").height()
-		if (!mobileView && $win.height() < $bodyHeight && $currentWinTop <= 0) {
+		if (!mobileView && $win.height() < $bodyHeight && currentWinTop <= 0) {
 			var $lastBar = $(".color-bar").last()
 			$("#color-bars").prepend($lastBar)
-			$win.scrollTop($currentWinTop + $lastBar.height())
-		} else if (!mobileView && $win.height() < $bodyHeight && ($win.height() + $currentWinTop >= $bodyHeight)) {
+			$win.scrollTop(currentWinTop + $lastBar.height())
+		} else if (!mobileView && $win.height() < $bodyHeight && ($win.height() + currentWinTop >= $bodyHeight)) {
 			var $firstBar = $(".color-bar").first()
 			$("#color-bars").append($firstBar)
-			$win.scrollTop($currentWinTop - $firstBar.height())
+			$win.scrollTop(currentWinTop - $firstBar.height())
 		}
 	}
 
@@ -268,13 +270,12 @@ Colorgram.View = (function() {
 	}
 
 	var renderBaseColorbars = function() {
-		var cbBaseSpread = 20
 		var sat = 50
 		var lum = 50
 		var bar
 		var fadeDelay = 0
 		$(".color-bar").remove()
-		for (var hue = 0; hue < 360; hue +=cbBaseSpread) {
+		for (var hue = 0; hue < 360; hue += cbBaseInterval) {
 			bar = $(Templates.colorBar)
 			$(bar).css("background-color", "hsl(" + hue + "," + sat + "%," + lum + "%)")
 			$(bar).attr("data-hue", hue)
@@ -284,11 +285,9 @@ Colorgram.View = (function() {
 	}
 
 	var expandColorBars = function(baseColorBar) {
-		var cbDetailCount = 20
 		var baseHue = $(baseColorBar).data("hue")
 		var detailBar = $(Templates.colorBarDetail)
 		var barHeight = $(".color-bar").first().height()
-		console.log("barheight:",barHeight)
 		var anchorIndex = $(baseColorBar).index() + 1
 
 		$(detailBar).attr("data-hue", baseHue)
@@ -298,9 +297,8 @@ Colorgram.View = (function() {
 		$(baseColorBar).replaceWith(detailBar)
 
 		var $anchor = $("#color-bars .color-bar:nth-child("+anchorIndex+")")
-		console.log($anchor)
 
-		for (var hue = baseHue + cbDetailCount - 1 ; hue > baseHue; hue --) {
+		for (var hue = baseHue + cbBaseInterval - 1 ; hue > baseHue; hue --) {
 			detailBar = $(Templates.colorBarDetail)
 			$(detailBar).attr("data-hue", hue)
 			$(detailBar).attr("data-base", baseHue)
@@ -312,6 +310,49 @@ Colorgram.View = (function() {
 				$(detailBar).insertAfter($anchor).animate({height: barHeight}, 800)
 			}
 		}
+	}
+
+	var collapseColorBarsDetail = function (baseHue) {
+		var $detailColorBars = $('[data-base="' + baseHue + '"]')
+		var $baseColorBar = $detailColorBars.first()
+		var	baseOffset =$baseColorBar.offset()
+				$detailColorBars = $detailColorBars.not($baseColorBar)
+		var $baseBar = $(Templates.colorBar)
+		// var $newBaseBar
+		var scrollOffset = ($win.height() / 2) - ($baseColorBar.height() / 2)
+
+		$baseBar.attr("data-hue", baseHue)
+		$baseBar.css("background-color", "hsl(" + baseHue + "," + pickerSat + "%," + pickerLum + "%)")
+		$baseColorBar.replaceWith($baseBar)
+		// $newBaseBar = $('[data-hue="' + baseHue + '"]').first()
+
+
+		if (mobileView) {
+			$detailColorBars.remove()
+			$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
+		} else {
+			// $detailColorBars.animate({height: 0}, 800, function() {
+			// 	$detailColorBars.remove()
+			// 	$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
+			// })
+			$detailColorBars.animate({height: 0}, 500, function() {
+				$detailColorBars.remove()
+			})
+			$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
+		}
+
+
+		// var basePosition = ($win.height() - $('header').height()) / 2 + ($baseColorBar.height() / 2)
+		// console.log("basePosition:::: ", basePosition)
+
+
+
+
+
+
+
+
+
 	}
 
 	var bindListeners = function() {
