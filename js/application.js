@@ -45,6 +45,7 @@ Colorgram.View = (function() {
 
 	var $win,
 			$header,
+			$ctrlBar,
 			$ctrlPicker,
 			$ctrlRecents,
 			$ctrlMap,
@@ -74,14 +75,16 @@ Colorgram.View = (function() {
 
 	var controlBarStates = {
 		picker: {picker: false, recents: true, map: true, sat: true, lum: true },
-		form: {picker: false, recents: true, map: true, sat: false, lum: false },
+		form: {picker: true, recents: true, map: true, sat: false, lum: false },
 		recents: {picker: true, recents: false, map: true, sat: false, lum: false },
 		map: {picker: true, recents: true, map: false, sat: false, lum: false }
 	}
 
 	var headerStates = {
 		picker: {class: "picker", subtitle: "What color are you feeling today?"},
-		form: {class: "submit", subtitle: "HSL: " + currentColorPick.hue + ", " + currentColorPick.sat + "%, " + currentColorPick.lum + "%"},
+		form: {class: "submit", subtitle: function() {
+			return "HSL: " + currentColorPick.hue + ", " + currentColorPick.sat + "%, " + currentColorPick.lum + "%"}
+		},
 		recents: {class: "recents", subtitle: "Here are the latest." },
 		map: {class: "color-map", subtitle: "Color by place and popularity."}
 	}
@@ -237,6 +240,7 @@ Colorgram.View = (function() {
 	var attachDOMNodes = function() {
 		$win = $(window)
 		$header = $("#title-block")
+		$controlBar = $("#control-bar")
 		$ctrlPicker = $("#ctrl-picker")
 		$ctrlRecents = $("#ctrl-recents")
 		$ctrlMap = $("#ctrl-map")
@@ -284,19 +288,18 @@ Colorgram.View = (function() {
 
 		var setHeaderState = function(mode){
 			$header.removeClass().addClass(headerStates[mode].class)
+			$header.children(".subtitle").text(headerStates[mode].subtitle)
 		}
 
 		var setControlBarStates = function(mode) {
-			$ctrlPicker.fadeOut(500)
-			$ctrlRecents.fadeOut(500)
-			$ctrlMap.fadeOut(500)
-			$ctrlLum.fadeOut(500)
-			$ctrlSat.fadeOut(500)
-			if (controlBarStates[mode].picker) $ctrlPicker.fadeIn(0)
-			if (controlBarStates[mode].recents) $ctrlRecents.fadeIn(0)
-			if (controlBarStates[mode].map) $ctrlMap.fadeIn(0)
-			if (controlBarStates[mode].sat) $ctrlLum.fadeIn(0)
-			if (controlBarStates[mode].lum) $ctrlSat.fadeIn(0)
+			$controlBar.fadeOut(500, function(){
+				if (controlBarStates[mode].picker) $ctrlPicker.show()
+				if (controlBarStates[mode].recents) $ctrlRecents.show()
+				if (controlBarStates[mode].map) $ctrlMap.show()
+				if (controlBarStates[mode].sat) $ctrlSat.show()
+				if (controlBarStates[mode].lum) $ctrlLum.show()
+				$controlBar.fadeIn(500)
+			})
 		}
 
 		var showComponent = function(component) {
