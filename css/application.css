@@ -267,8 +267,16 @@ nav {
 	text-align: center;
 }
 
+button {
+	border: 0;
+}
+
 .button.submit {
 	background-color: #FFFFFF;
+}
+
+.button.submit:focus {
+	opacity: 1;
 }
 
 .button:active {
@@ -635,6 +643,14 @@ nav {
 .button:active {
 	opacity: .8;
 	background-color: #FFFFFF;
+}
+
+.button.submit:focus {
+	opacity: 1;
+}
+
+.button.submit:active {
+	opacity: .8;
 }
 
 

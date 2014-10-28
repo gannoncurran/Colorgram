@@ -94,7 +94,8 @@ Colorgram.View = (function() {
 			id: "#button-picker",
 			browserEvent: "click",
 			fn: function(e) {
-				console.log("color picker button clicked")
+				// console.log("color picker button clicked")
+				setViewMode.picker()
 			}
 		},
 		{
@@ -240,6 +241,7 @@ Colorgram.View = (function() {
 	var attachDOMNodes = function() {
 		$win = $(window)
 		$header = $("#title-block")
+		$viewModeWrapper = $("#view-mode-wrapper")
 		$controlBar = $("#control-bar")
 		$ctrlPicker = $("#ctrl-picker")
 		$ctrlRecents = $("#ctrl-recents")
@@ -291,40 +293,54 @@ Colorgram.View = (function() {
 			$header.children(".subtitle").text(headerStates[mode].subtitle)
 		}
 
-		var setControlBarStates = function(mode) {
-			$controlBar.fadeOut(500, function(){
-				if (controlBarStates[mode].picker) $ctrlPicker.show()
-				if (controlBarStates[mode].recents) $ctrlRecents.show()
-				if (controlBarStates[mode].map) $ctrlMap.show()
-				if (controlBarStates[mode].sat) $ctrlSat.show()
-				if (controlBarStates[mode].lum) $ctrlLum.show()
-				$controlBar.fadeIn(500)
-			})
+		var setControlBarState = function(mode) {
+			$ctrlPicker.hide()
+			$ctrlRecents.hide()
+			$ctrlMap.hide()
+			$ctrlSat.hide()
+			$ctrlLum.hide()
+			if (controlBarStates[mode].picker) $ctrlPicker.show()
+			if (controlBarStates[mode].recents) $ctrlRecents.show()
+			if (controlBarStates[mode].map) $ctrlMap.show()
+			if (controlBarStates[mode].sat) $ctrlSat.show()
+			if (controlBarStates[mode].lum) $ctrlLum.show()
 		}
 
-		var showComponent = function(component) {
-			setControlBarStates(component)
-			setBackgroundColor(component)
-			$header.fadeOut(500, function() {			
-				setHeaderState(component)
-				$header.fadeIn(0)
-			})
+		var setBodyState = function(mode) {
 			for (var comp in viewComponents) {
 				if (viewComponents.hasOwnProperty(comp)) {
-					if (viewComponents[comp].name === component) {
-						$(viewComponents[comp].mountPoint).removeClass()
+					if (viewComponents[comp].name === mode) {
+						$(viewComponents[comp].mountPoint).removeClass().show()
 					} else {
-						$(viewComponents[comp].mountPoint).fadeOut(500)
+						$(viewComponents[comp].mountPoint).removeClass().hide()
 					}
 				}
 			}
 		}
 
+		var transitionView = function(component) {
+			if (component === "form") setBackgroundColor(component)
+			$viewModeWrapper.fadeOut(500, function() {
+				setBodyState(component)
+				$viewModeWrapper.fadeIn(500, function() {
+					if (component === "picker") setBackgroundColor(component)
+				})
+			})
+			$header.fadeOut(500, function() {
+				setHeaderState(component)
+				$header.fadeIn(500)
+			})
+			$controlBar.fadeOut(500, function() {
+				setControlBarState(component)
+				$controlBar.fadeIn(500)				
+			})
+		}
+
 		return {
-			picker: 	function() { showComponent("picker") },
-			form: 		function() { showComponent("form") },
-			recents: 	function() { showComponent("recents") },
-			map: 			function() { showComponent("map")	}
+			picker: 	function() { transitionView("picker") },
+			form: 		function() { transitionView("form") },
+			recents: 	function() { transitionView("recents") },
+			map: 			function() { transitionView("map")	}
 		}
 
 	})()
