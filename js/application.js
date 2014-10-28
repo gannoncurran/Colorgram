@@ -43,23 +43,47 @@ Colorgram.Model = (function() {
 
 Colorgram.View = (function() {
 
-	var pressInterval,
+	var $win,
+			$header,
+			$ctrlPicker,
+			$ctrlRecents,
+			$ctrlMap,
+			$ctrlLum,
+			$ctrlSat,
+			pressInterval,
 			clickTimeout,
 			mobileView = false,
 			pickerSat = 50,
 			pickerLum = 50,
 			cbBaseInterval = 20
 
+	var	currentColorPick = {
+		hue: 0,
+		sat: 50,
+		lum: 50
+	}
+
 	var Templates = {}
 
-	var $win = $(window)
-
 	var viewComponents = {
-		nav: "#control-bar",
-		picker: "#color-bars",
-		form: "#color-form",
-		recents: "#recents-grid",
-		map: "#map-container"
+		picker: {name: "picker", mountPoint: "#color-bars"},
+		form: {name: "form", mountPoint: "#color-form"},
+		recents: {name: "recents", mountPoint: "#recents-grid"},
+		map: {name: "map", mountPoint: "#map-container"}
+	}
+
+	var controlBarStates = {
+		picker: {picker: false, recents: true, map: true, sat: true, lum: true },
+		form: {picker: false, recents: true, map: true, sat: false, lum: false },
+		recents: {picker: true, recents: false, map: true, sat: false, lum: false },
+		map: {picker: true, recents: true, map: false, sat: false, lum: false }
+	}
+
+	var headerStates = {
+		picker: {class: "picker", subtitle: "What color are you feeling today?"},
+		form: {class: "submit", subtitle: "HSL: " + currentColorPick.hue + ", " + currentColorPick.sat + "%, " + currentColorPick.lum + "%"},
+		recents: {class: "recents", subtitle: "Here are the latest." },
+		map: {class: "color-map", subtitle: "Color by place and popularity."}
 	}
 
 	var listeners = [
@@ -179,35 +203,167 @@ Colorgram.View = (function() {
 				e.preventDefault()
 				var baseColorBar = $(e.target).parents(".color-bar").first()
 				var classes = e.target.parentNode.className
-
 				if (classes.indexOf("select") > -1) {
 					console.log('select was clicked')
+					currentColorPick.hue = baseColorBar.data("hue")
+					currentColorPick.sat = pickerSat
+					currentColorPick.lum = pickerLum
+					setViewMode.form()
 				} else if (classes.indexOf("return") > -1) {
 					console.log('return was clicked')
-					// renderBaseColorbars()
 					collapseColorBarsDetail(baseColorBar.data("base"))
 				} else if (classes.indexOf("expand") > -1) {
 					console.log('expand was clicked')
 					expandColorBars(baseColorBar)
 				}
-
 			}
 		},
 		{
-			id: $win,
+			id: $(window),
 			browserEvent: "scroll",
 			fn: function(e) {
 				rotateColorbars()
 			}
 		},
 		{
-			id: $win,
+			id: $(window),
 			browserEvent: "resize",
 			fn: function(e) {
 				updateMobileViewStatus()
 			}
 		}
 	]
+
+	var attachDOMNodes = function() {
+		$win = $(window)
+		$header = $("#title-block")
+		$ctrlPicker = $("#ctrl-picker")
+		$ctrlRecents = $("#ctrl-recents")
+		$ctrlMap = $("#ctrl-map")
+		$ctrlLum = $("#ctrl-lum")
+		$ctrlSat = $("#ctrl-sat")
+	}
+
+	var bindListeners = function() {
+		for (var i in listeners) {
+			var listener = listeners[i]
+			$(listener.id).on(listener.browserEvent, listener.fn)
+		}
+	}
+
+	var getTemplates = function() {
+		var colorBar 							= $('#color-bar-template')
+		var colorBarDetail 				= $('#color-bar-detail-template')
+		var recentsTile 					= $('#recents-tile-template')
+
+		Templates.colorBar 				= $.trim(colorBar.html())
+		Templates.colorBarDetail 	= $.trim(colorBarDetail.html())
+		Templates.recentsTile 	 	= $.trim(recentsTile.html())
+
+		$(colorBar).remove()
+		$(colorBarDetail).remove()
+		$(recentsTile).remove()
+	}
+
+	var generateBGColor = function(hue, sat, lum) {
+		return "hsl(" + hue + "," + sat + "%," + lum + "%)"
+	}
+
+	var setViewMode = (function() {
+
+		var setBackgroundColor = function(mode) {
+			if (mode === "form") {
+				var hue = currentColorPick.hue
+				var sat = currentColorPick.sat
+				var lum = currentColorPick.lum
+				$('html').css("background-color", generateBGColor(hue, sat, lum))
+			} else {
+				$('html').css("background-color", "#000000")
+			}
+		}
+
+		var setHeaderState = function(mode){
+			$header.removeClass().addClass(headerStates[mode].class)
+		}
+
+		var setControlBarStates = function(mode) {
+			$ctrlPicker.fadeOut(500)
+			$ctrlRecents.fadeOut(500)
+			$ctrlMap.fadeOut(500)
+			$ctrlLum.fadeOut(500)
+			$ctrlSat.fadeOut(500)
+			if (controlBarStates[mode].picker) $ctrlPicker.fadeIn(0)
+			if (controlBarStates[mode].recents) $ctrlRecents.fadeIn(0)
+			if (controlBarStates[mode].map) $ctrlMap.fadeIn(0)
+			if (controlBarStates[mode].sat) $ctrlLum.fadeIn(0)
+			if (controlBarStates[mode].lum) $ctrlSat.fadeIn(0)
+		}
+
+		var showComponent = function(component) {
+			setControlBarStates(component)
+			setBackgroundColor(component)
+			$header.fadeOut(500, function() {			
+				setHeaderState(component)
+				$header.fadeIn(0)
+			})
+			for (var comp in viewComponents) {
+				if (viewComponents.hasOwnProperty(comp)) {
+					if (viewComponents[comp].name === component) {
+						$(viewComponents[comp].mountPoint).removeClass()
+					} else {
+						$(viewComponents[comp].mountPoint).fadeOut(500)
+					}
+				}
+			}
+		}
+
+		return {
+			picker: 	function() { showComponent("picker") },
+			form: 		function() { showComponent("form") },
+			recents: 	function() { showComponent("recents") },
+			map: 			function() { showComponent("map")	}
+		}
+
+	})()
+
+	var	updateMobileViewStatus = function() {
+		var currentMobileStatus = mobileView
+		if ($win.width() < 767) {
+			mobileView = true
+		} else {
+			mobileView = false
+		}
+		if (currentMobileStatus !== mobileView && mobileView) renderBaseColorbars()
+	}
+
+	var renderBaseColorbars = function() {
+		var sat = 50
+		var lum = 50
+		var bar
+		var fadeDelay = 0
+		$(".color-bar").remove()
+		for (var hue = 0; hue < 360; hue += cbBaseInterval) {
+			bar = $(Templates.colorBar)
+			$(bar).css("background-color", "hsl(" + hue + "," + sat + "%," + lum + "%)")
+			$(bar).attr("data-hue", hue)
+			$(bar).hide().appendTo("#color-bars").delay(fadeDelay).fadeIn(500)
+			fadeDelay += 75
+		}
+	}
+
+	var rotateColorbars = function() {
+		var currentWinTop = $win.scrollTop()
+		var $bodyHeight = $("html").height()
+		if (!mobileView && $win.height() < $bodyHeight && currentWinTop <= 0) {
+			var $lastBar = $(".color-bar").last()
+			$("#color-bars").prepend($lastBar)
+			$win.scrollTop(currentWinTop + $lastBar.height())
+		} else if (!mobileView && $win.height() < $bodyHeight && ($win.height() + currentWinTop >= $bodyHeight)) {
+			var $firstBar = $(".color-bar").first()
+			$("#color-bars").append($firstBar)
+			$win.scrollTop(currentWinTop - $firstBar.height())
+		}
+	}
 
 	var adjustPickerSL = function(satChange, lumChange) {
 		if (satChange === 0 && lumChange === 0) return
@@ -228,59 +384,6 @@ Colorgram.View = (function() {
 				this.dataset.lum = pickerLum
 				$(this).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
 			})
-		}
-	}
-
-	var rotateColorbars = function() {
-		var currentWinTop = $win.scrollTop()
-		var $bodyHeight = $("html").height()
-		if (!mobileView && $win.height() < $bodyHeight && currentWinTop <= 0) {
-			var $lastBar = $(".color-bar").last()
-			$("#color-bars").prepend($lastBar)
-			$win.scrollTop(currentWinTop + $lastBar.height())
-		} else if (!mobileView && $win.height() < $bodyHeight && ($win.height() + currentWinTop >= $bodyHeight)) {
-			var $firstBar = $(".color-bar").first()
-			$("#color-bars").append($firstBar)
-			$win.scrollTop(currentWinTop - $firstBar.height())
-		}
-	}
-
-	var	updateMobileViewStatus = function() {
-		var currentMobileStatus = mobileView
-		if ($win.width() < 767) {
-			mobileView = true
-		} else {
-			mobileView = false
-		}
-		if (currentMobileStatus !== mobileView && mobileView) renderBaseColorbars()
-	}
-
-	var getTemplates = function() {
-		var colorBar 							= $('#color-bar-template')
-		var colorBarDetail 				= $('#color-bar-detail-template')
-		var recentsTile 					= $('#recents-tile-template')
-
-		Templates.colorBar 				= $.trim(colorBar.html())
-		Templates.colorBarDetail 	= $.trim(colorBarDetail.html())
-		Templates.recentsTile 	 	= $.trim(recentsTile.html())
-
-		$(colorBar).remove()
-		$(colorBarDetail).remove()
-		$(recentsTile).remove()
-	}
-
-	var renderBaseColorbars = function() {
-		var sat = 50
-		var lum = 50
-		var bar
-		var fadeDelay = 0
-		$(".color-bar").remove()
-		for (var hue = 0; hue < 360; hue += cbBaseInterval) {
-			bar = $(Templates.colorBar)
-			$(bar).css("background-color", "hsl(" + hue + "," + sat + "%," + lum + "%)")
-			$(bar).attr("data-hue", hue)
-			$(bar).hide().appendTo("#color-bars").delay(fadeDelay).fadeIn(500)
-			fadeDelay += 75
 		}
 	}
 
@@ -315,63 +418,38 @@ Colorgram.View = (function() {
 	var collapseColorBarsDetail = function (baseHue) {
 		var $detailColorBars = $('[data-base="' + baseHue + '"]')
 		var $baseColorBar = $detailColorBars.first()
-		var	baseOffset =$baseColorBar.offset()
+		// TODO: USE BASEOFFSET BELOW TO CHECK FOR BAR POSITION EDGECASES THAT 
+		// WILL BREAK COLLAPSE FUNCTIONALITY BECAUSE OF INFINITIE SCROLL
+		// var	baseOffset =$baseColorBar.offset()
 				$detailColorBars = $detailColorBars.not($baseColorBar)
 		var $baseBar = $(Templates.colorBar)
-		// var $newBaseBar
 		var scrollOffset = ($win.height() / 2) - ($baseColorBar.height() / 2)
 
 		$baseBar.attr("data-hue", baseHue)
 		$baseBar.css("background-color", "hsl(" + baseHue + "," + pickerSat + "%," + pickerLum + "%)")
 		$baseColorBar.replaceWith($baseBar)
-		// $newBaseBar = $('[data-hue="' + baseHue + '"]').first()
-
 
 		if (mobileView) {
 			$detailColorBars.remove()
 			$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
 		} else {
-			// $detailColorBars.animate({height: 0}, 800, function() {
-			// 	$detailColorBars.remove()
-			// 	$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
-			// })
 			$detailColorBars.animate({height: 0}, 500, function() {
 				$detailColorBars.remove()
 			})
 			$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
 		}
-
-
-		// var basePosition = ($win.height() - $('header').height()) / 2 + ($baseColorBar.height() / 2)
-		// console.log("basePosition:::: ", basePosition)
-
-
-
-
-
-
-
-
-
-	}
-
-	var bindListeners = function() {
-		for (var i in listeners) {
-			var listener = listeners[i]
-			$(listener.id).on(listener.browserEvent, listener.fn)
-		}
 	}
 
 	$(document).ready(function() {
-		console.log("document ready fired")
 		Colorgram.initialize()
 	});
 
 	return {
 		init: function() {
+			attachDOMNodes()
 			getTemplates()
-			renderBaseColorbars()
 			bindListeners()
+			renderBaseColorbars()
 			updateMobileViewStatus()
 		}
 	}

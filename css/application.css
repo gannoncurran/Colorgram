@@ -539,6 +539,7 @@ nav {
 .control .control-icon:hover,
 .arrow:hover {
 	opacity: 1;
+	cursor: pointer;
 }
 
 .control .control-icon:active,
@@ -637,6 +638,10 @@ nav {
 /* SUBMIT VIEW DESKTOP */
 /* ====================================*/
 
+#title-block.submit {
+	padding-left: 2rem;
+}
+
 #color-form {
 	width: 100%;
 	padding: 1.2rem 10rem 0 1.9rem;
@@ -659,6 +664,10 @@ nav {
 /* RECENTS GRID VIEW DESKTOP */
 /* ====================================*/
 
+#title-block.recents {
+	padding-left: 2rem;
+}
+
 .tile {
 	display: inline-block;
 	width: 30%;
@@ -677,6 +686,10 @@ nav {
 /* ====================================*/
 /* COLOR MAP VIEW DESKTOP */
 /* ====================================*/
+
+#title-block.color-map {
+	padding-left: 2rem;
+}
 
 
 }

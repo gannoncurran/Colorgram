@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="./css/application.css">
   
   <script src="./js/flesler_jquery_scrollto_min.js"></script>
-  
   <script src="./js/application.js"></script>
   
 
@@ -26,25 +25,25 @@
 
 	<nav>
 		<div id="control-bar">
-			<div class="control bumper tooltip-parent">
+			<div id="ctrl-picker" class="control bumper tooltip-parent">
 				<p id="button-picker" class="control-icon"><span class="icon-list"></span></p>
 				<p class="tooltip picker hidden_button">Color Picker</p>
 			</div>
-			<div class="control bumper tooltip-parent">
+			<div id="ctrl-recents" class="control bumper tooltip-parent">
 				<p id="button-recents" class="control-icon"><span class="icon-layout"></span></p>
 				<p class="tooltip recent hidden_button">Recent Colorgrams</p>
 			</div>
-			<div class="control bumper tooltip-parent">
+			<div id="ctrl-map" class="control bumper tooltip-parent">
 				<p id="button-map" class="control-icon"><span class="icon-globe"></span></p>
 				<p class="tooltip map hidden_button">Map</p>
 			</div>
-			<div class="control-module tooltip-parent">
+			<div id="ctrl-lum" class="control-module tooltip-parent">
 				<p id="button-brightup" class="arrow"><span class="icon-arrow-up"></span></p>
 				<p class="control-icon"><span class="icon-brightness"></span></p>
 				<p id="button-brightdn" class="arrow"><span class="icon-arrow-down"></span></p>
 				<p class="tooltip brightness hidden_button">Brightness</p>
 			</div>
-			<div class="control-module tooltip-parent">
+			<div id="ctrl-sat" class="control-module tooltip-parent">
 				<p id="button-satdn" class="arrow"><span class="icon-arrow-up"></span></p>
 				<p class="control-icon"><span class="icon-cloud"></span></p>
 				<p id="button-satup" class="arrow"><span class="icon-arrow-down"></span></p>
@@ -72,6 +71,9 @@
 			<input type="text" placeholder="Name your color."></div>
 		<div class="fancy-form field-button">
 			<input type="text" placeholder="What's your city?"><p><span class="icon-pin-alt"></span></p></div>
+			<div class="button select">
+				<span class="icon-checkmark"></span>
+			</div>
 	</div>
 
  <!-- RECENTS GRID MOUNT POINT -->
