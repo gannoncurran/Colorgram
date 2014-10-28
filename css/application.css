@@ -267,12 +267,16 @@ nav {
 	text-align: center;
 }
 
+.button.submit {
+	background-color: #FFFFFF;
+}
+
 .button:active {
 	opacity: 1;
 	background-color: #FFFFFF;
 }
 
-.expand, .select, .return {
+.expand, .select, .return, .submit {
 	color: #000000;
 	font-size: 4rem;
 }
