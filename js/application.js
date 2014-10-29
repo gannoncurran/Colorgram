@@ -43,6 +43,56 @@ Colorgram.Model = (function() {
   		place: {name: "Place Name2", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
+    },
+  	{ id: "2",
+  		name: "testgram3", 
+  		hue: 234, 
+  		sat: 80, 
+  		lum: 20, 
+  		loc: {lat: 000, lng: 000}, 
+  		place: {name: "Place Name3", lat: 000, lng: 000}, 
+  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+  		popularity: 0
+    },
+  	{ id: "3",
+  		name: "testgram4", 
+  		hue: 12, 
+  		sat: 20, 
+  		lum: 60, 
+  		loc: {lat: 000, lng: 000}, 
+  		place: {name: "Place Name4", lat: 000, lng: 000}, 
+  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+  		popularity: 0
+    },
+  	{ id: "4",
+  		name: "testgram5", 
+  		hue: 12, 
+  		sat: 0, 
+  		lum: 50, 
+  		loc: {lat: 000, lng: 000}, 
+  		place: {name: "Place Name5", lat: 000, lng: 000}, 
+  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+  		popularity: 0
+    },
+  	{ id: "5",
+  		name: "testgram6", 
+  		hue: 12, 
+  		sat: 0, 
+  		lum: 100, 
+  		loc: {lat: 000, lng: 000}, 
+  		place: {name: "Place Name5", lat: 000, lng: 000}, 
+  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+  		popularity: 0
+    },
+  	{ id: "6",
+  		name: "testgram7", 
+  		hue: 12, 
+  		sat: 0, 
+  		lum: 0, 
+  		loc: {lat: 000, lng: 000}, 
+  		place: {name: "Place Name5", lat: 000, lng: 000}, 
+  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+  		popularity: 0
     }
 	]
 
@@ -54,7 +104,6 @@ Colorgram.Model = (function() {
 		},
 
 		all: function (){
-			console.log("all fired")
 			return colorgrams
 		}
 
@@ -75,6 +124,7 @@ Colorgram.View = (function() {
 			pressInterval,
 			clickTimeout,
 			currentViewMode = "picker",
+			infiniteScroll = true,
 			mobileView = false,
 			pickerSat = 50,
 			pickerLum = 50,
@@ -108,7 +158,7 @@ Colorgram.View = (function() {
 			return "HSL: " + currentColorPick.hue + ", " + currentColorPick.sat + "%, " + currentColorPick.lum + "%"}
 		},
 		recents: {class: "recents", subtitle: "Here are the latest." },
-		map: {class: "color-map", subtitle: "Color by place and popularity."}
+		map: {class: "color-map", subtitle: "Recent colors by place."}
 	}
 
 	var listeners = [
@@ -130,6 +180,7 @@ Colorgram.View = (function() {
 			id: "#button-picker",
 			browserEvent: "click",
 			fn: function(e) {
+				infiniteScroll = true
 				setViewMode.picker()
 			}
 		},
@@ -137,6 +188,7 @@ Colorgram.View = (function() {
 			id: "#button-recents",
 			browserEvent: "click",
 			fn: function(e) {
+				infiniteScroll = false
 				setViewMode.recents()
 			}
 		},
@@ -144,7 +196,8 @@ Colorgram.View = (function() {
 			id: "#button-map",
 			browserEvent: "click",
 			fn: function(e) {
-				console.log("map button clicked")
+				infiniteScroll = false
+				setViewMode.map()
 			}
 		},
 		{
@@ -243,16 +296,13 @@ Colorgram.View = (function() {
 				var baseColorBar = $(e.target).parents(".color-bar").first()
 				var classes = e.target.parentNode.className
 				if (classes.indexOf("select") > -1) {
-					console.log('select was clicked')
 					currentColorPick.hue = baseColorBar.data("hue")
 					currentColorPick.sat = pickerSat
 					currentColorPick.lum = pickerLum
 					setViewMode.form()
 				} else if (classes.indexOf("return") > -1) {
-					console.log('return was clicked')
 					collapseColorBarsDetail(baseColorBar.data("base"))
 				} else if (classes.indexOf("expand") > -1) {
-					console.log('expand was clicked')
 					expandColorBars(baseColorBar)
 				}
 			}
@@ -261,7 +311,8 @@ Colorgram.View = (function() {
 			id: $(window),
 			browserEvent: "scroll",
 			fn: function(e) {
-				rotateColorbars()
+				var scroll = function() {return infinteScroll}
+				if (scroll) rotateColorbars()
 			}
 		},
 		{
@@ -396,8 +447,10 @@ Colorgram.View = (function() {
 	var	updateMobileViewStatus = function() {
 		var currentMobileStatus = mobileView
 		if ($win.width() < 767) {
+			infiniteScroll = false
 			mobileView = true
 		} else {
+			if (currentViewMode === "picker") infiniteScroll = true
 			mobileView = false
 		}
 		if (currentMobileStatus !== mobileView && mobileView) {
@@ -410,8 +463,8 @@ Colorgram.View = (function() {
 	}
 
 	var renderBaseColorbars = function() {
-		var sat = 50
-		var lum = 50
+		var sat = pickerSat
+		var lum = pickerLum
 		var bar
 		var fadeDelay = 0
 		$(".color-bar").remove()
@@ -434,6 +487,7 @@ Colorgram.View = (function() {
 			var tile = $(Templates.recentsTile)
 			$(tile).css("background-color", generateBGColor(c.hue, c.sat, c.lum))
 			$(tile).children(".color-name").text(c.name)
+			if (c.lum < 50) $(tile).addClass("reverse")
 			$(tile).children(".datetime").text(c.when.date+" | "+c.when.time)
 			$(tile).children(".location").text(c.place.name)
 			$(tile).children(".color-build").text("HSL: "+c.hue+", "+c.sat+"%, "+c.lum+"%")
@@ -445,11 +499,11 @@ Colorgram.View = (function() {
 	var rotateColorbars = function() {
 		var currentWinTop = $win.scrollTop()
 		var $bodyHeight = $("html").height()
-		if (!mobileView && $win.height() < $bodyHeight && currentWinTop <= 0) {
+		if (infiniteScroll && $win.height() < $bodyHeight && currentWinTop <= 0) {
 			var $lastBar = $(".color-bar").last()
 			$("#color-bars").prepend($lastBar)
 			$win.scrollTop(currentWinTop + $lastBar.height())
-		} else if (!mobileView && $win.height() < $bodyHeight && ($win.height() + currentWinTop >= $bodyHeight)) {
+		} else if (infiniteScroll && $win.height() < $bodyHeight && ($win.height() + currentWinTop >= $bodyHeight)) {
 			var $firstBar = $(".color-bar").first()
 			$("#color-bars").append($firstBar)
 			$win.scrollTop(currentWinTop - $firstBar.height())
@@ -542,6 +596,7 @@ Colorgram.View = (function() {
 			bindListeners()
 			renderBaseColorbars()
 			updateMobileViewStatus()
+			console.log("infinitescroll set to: ", infiniteScroll)
 		}
 	}
 	
