@@ -23,7 +23,28 @@ Colorgram.Comm = (function() {
 })()
 
 Colorgram.Model = (function() {
-	var colorgrams = [{name: "testgram", id: "000", hue: "000", sat: "50%", lum: "50%", loc: {lat: 000, lng: 000}, place: {name: "Place Name", lat: 000, lng: 000}, popularity: 0}]
+	var colorgrams = [
+		{ id: "0",
+			name: "testgram", 
+			hue: 0, 
+			sat: 50, 
+			lum: 50, 
+			loc: {lat: 000, lng: 000}, 
+			place: {name: "Place Name", lat: 000, lng: 000}, 
+			when: {date: "January 4, 2014", time: "2:45pm", timestamp: 0, utcOffset: -7 },
+			popularity: 0
+	  },
+  	{ id: "1",
+  		name: "testgram2", 
+  		hue: 132, 
+  		sat: 40, 
+  		lum: 60, 
+  		loc: {lat: 000, lng: 000}, 
+  		place: {name: "Place Name2", lat: 000, lng: 000}, 
+  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+  		popularity: 0
+    }
+	]
 
 	return {
 
@@ -32,8 +53,8 @@ Colorgram.Model = (function() {
 			return colorgrams
 		},
 
-		allColorgrams: function (){
-			console.log("allColorgrams fired")
+		all: function (){
+			console.log("all fired")
 			return colorgrams
 		}
 
@@ -53,6 +74,7 @@ Colorgram.View = (function() {
 			$ctrlSat,
 			pressInterval,
 			clickTimeout,
+			currentViewMode = "picker",
 			mobileView = false,
 			pickerSat = 50,
 			pickerLum = 50,
@@ -91,10 +113,25 @@ Colorgram.View = (function() {
 
 	var listeners = [
 		{
+			id: ".control, .control-module",
+			browserEvent: "mouseenter",
+			fn: function(e) {
+				console.log("tooltip mouseenter")
+				if (!mobileView) tooltipsVisible(true)
+			}
+		},
+		{
+			id: ".control, .control-module",
+			browserEvent: "mouseleave",
+			fn: function(e) {
+				console.log("tooltip mouseleave")
+				if (!mobileView) tooltipsVisible(false)
+			}
+		},
+		{
 			id: "#button-picker",
 			browserEvent: "click",
 			fn: function(e) {
-				// console.log("color picker button clicked")
 				setViewMode.picker()
 			}
 		},
@@ -102,7 +139,7 @@ Colorgram.View = (function() {
 			id: "#button-recents",
 			browserEvent: "click",
 			fn: function(e) {
-				console.log("recents button clicked")
+				setViewMode.recents()
 			}
 		},
 		{
@@ -284,7 +321,7 @@ Colorgram.View = (function() {
 				var lum = currentColorPick.lum
 				$('html').css("background-color", generateBGColor(hue, sat, lum))
 			} else {
-				$('html').css("background-color", "#000000")
+				$('html').css("background-color", "#111111")
 			}
 		}
 
@@ -319,27 +356,40 @@ Colorgram.View = (function() {
 		}
 
 		var transitionView = function(component) {
-			if (component === "form") setBackgroundColor(component)
-			$viewModeWrapper.fadeOut(500, function() {
+			if (component === "form") {
+				// if going to the form, setBG immediately
+				// fade out, change states, fade in
+				setBackgroundColor(component)
+			} else if (currentViewMode === "form" && component !== "picker") {
+				// if we're on the form and NOT going to the picker
+				// fade the background color to gray, fade components, set state, fadein
+				$('html').animate({backgroundColor: "#111111"}, 250)
+			}
+			$viewModeWrapper.fadeOut(250, function() {
 				setBodyState(component)
-				$viewModeWrapper.fadeIn(500, function() {
+				$viewModeWrapper.fadeIn(250, function() {
+					// if we're back at the picker, reset the bg color to gray
 					if (component === "picker") setBackgroundColor(component)
 				})
 			})
-			$header.fadeOut(500, function() {
+			$header.fadeOut(250, function() {
 				setHeaderState(component)
-				$header.fadeIn(500)
+				$header.fadeIn(250)
 			})
-			$controlBar.fadeOut(500, function() {
+			$controlBar.fadeOut(250, function() {
 				setControlBarState(component)
-				$controlBar.fadeIn(500)				
+				$controlBar.fadeIn(250)				
 			})
+			currentViewMode = component
 		}
 
 		return {
 			picker: 	function() { transitionView("picker") },
 			form: 		function() { transitionView("form") },
-			recents: 	function() { transitionView("recents") },
+			recents: 	function() {
+									transitionView("recents")
+									renderRecents()
+								},
 			map: 			function() { transitionView("map")	}
 		}
 
@@ -355,6 +405,14 @@ Colorgram.View = (function() {
 		if (currentMobileStatus !== mobileView && mobileView) renderBaseColorbars()
 	}
 
+	var tooltipsVisible = function(visibility) {
+		if (visibility) {
+			$controlBar.width("16rem")
+		} else {
+			$controlBar.width("8rem")
+		}
+	}
+
 	var renderBaseColorbars = function() {
 		var sat = 50
 		var lum = 50
@@ -365,9 +423,27 @@ Colorgram.View = (function() {
 			bar = $(Templates.colorBar)
 			$(bar).css("background-color", "hsl(" + hue + "," + sat + "%," + lum + "%)")
 			$(bar).attr("data-hue", hue)
-			$(bar).hide().appendTo("#color-bars").delay(fadeDelay).fadeIn(500)
+			$(bar).hide().appendTo(viewComponents.picker.mountPoint).delay(fadeDelay).fadeIn(500)
 			fadeDelay += 75
 		}
+	}
+
+	var renderRecents = function() {
+		var colorgrams = Colorgram.Model.all()
+		var fadeDelay = 0
+		$(".tile").remove()
+		for (var i in colorgrams) {
+			var c = colorgrams[i]
+			// name, when.date, when.time, place.name, hue, sat, lum 
+			var tile = $(Templates.recentsTile)
+			$(tile).css("background-color", generateBGColor(c.hue, c.sat, c.lum))
+			$(tile).children(".color-name").text(c.name)
+			$(tile).children(".datetime").text(c.when.date+" | "+c.when.time)
+			$(tile).children(".location").text(c.place.name)
+			$(tile).children(".color-build").text("HSL: "+c.hue+", "+c.sat+"%, "+c.lum+"%")
+			$(tile).hide().appendTo($(viewComponents.recents.mountPoint)).delay(fadeDelay).fadeIn(500)
+			fadeDelay += 75
+		}	
 	}
 
 	var rotateColorbars = function() {
@@ -488,7 +564,7 @@ Colorgram.initialize = function() {
 	Colorgram.View.init()
 
 	// console.log("Testing colorgram model")
-	// var grams = Colorgram.Model.allColorgrams()
+	// var grams = Colorgram.Model.all()
 	// console.log(grams)
 }
 

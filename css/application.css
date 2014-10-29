@@ -122,7 +122,7 @@ html {
 	font-family: 'Raleway', sans-serif;
 	font-weight: 400;
 	font-size: 16px;
-	background-color: #000000;
+	background-color: #111111;
 	min-height: 100%;
 	position: relative;
 }
@@ -165,7 +165,7 @@ nav {
 	width: 4.5rem;
 	height: 100%;
 	z-index: 225;
-	pointer-events: none;
+	/*pointer-events: none;*/
 }
 
 #control-bar {
@@ -174,8 +174,6 @@ nav {
 	width: 4.5rem;
 	right: 0;
 	color: #FFFFFF;
-	/*z-index: 100;*/
-	overflow-x: hidden;
 	overflow-y: scroll;
 }
 
@@ -271,13 +269,6 @@ button {
 	border: 0;
 }
 
-.button.submit {
-	background-color: #FFFFFF;
-}
-
-.button.submit:focus {
-	opacity: 1;
-}
 
 .button:active {
 	opacity: 1;
@@ -389,12 +380,20 @@ button {
 	color: #CC6600;
 }
 
+.button.submit {
+	background-color: #FFFFFF;
+}
+
+.button.submit:focus {
+	opacity: 1;
+}
+
 /* ====================================*/
 /* RECENTS GRID VIEW MOBILE */
 /* ====================================*/
 
 #recents-grid {
-	background-color: #222222;
+	background-color: #181818;
 	overflow: hidden;
 }
 
@@ -531,9 +530,9 @@ button {
 	width: 8rem;
 }
 
-#control-bar:hover {
+/*#control-bar:hover {
 	width: 16rem;
-}
+}*/
 
 .control, .control-module {
 	margin: 2rem 0 0 auto;
@@ -632,7 +631,7 @@ button {
 .button {
 	vertical-align: middle;
 	border-radius: 50px;
-	background-color: rgba(255, 255, 255, 1);
+	background-color: #FFFFFF;
 }
 
 .button:hover {
@@ -645,13 +644,6 @@ button {
 	background-color: #FFFFFF;
 }
 
-.button.submit:focus {
-	opacity: 1;
-}
-
-.button.submit:active {
-	opacity: .8;
-}
 
 
 /* ====================================*/
@@ -678,6 +670,14 @@ button {
 .fancy-form input {
 	font-size: 1.75rem;
 	font-weight: 400;
+}
+
+.button.submit:focus {
+	opacity: 1;
+}
+
+.button.submit:active {
+	opacity: .8;
 }
 
 /* ====================================*/
