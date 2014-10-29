@@ -177,6 +177,10 @@ nav {
 	overflow-y: scroll;
 }
 
+#control-bar.open {
+	width: 4.5rem;
+}
+
 #control-bar::-webkit-scrollbar { 
     display: none; 
 }
@@ -530,9 +534,9 @@ button {
 	width: 8rem;
 }
 
-/*#control-bar:hover {
+#control-bar.open {
 	width: 16rem;
-}*/
+}
 
 .control, .control-module {
 	margin: 2rem 0 0 auto;

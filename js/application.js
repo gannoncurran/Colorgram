@@ -117,7 +117,7 @@ Colorgram.View = (function() {
 			browserEvent: "mouseenter",
 			fn: function(e) {
 				console.log("tooltip mouseenter")
-				if (!mobileView) tooltipsVisible(true)
+				if (!mobileView) toggleTooltips()
 			}
 		},
 		{
@@ -125,7 +125,7 @@ Colorgram.View = (function() {
 			browserEvent: "mouseleave",
 			fn: function(e) {
 				console.log("tooltip mouseleave")
-				if (!mobileView) tooltipsVisible(false)
+				if (!mobileView) toggleTooltips()
 			}
 		},
 		{
@@ -402,15 +402,14 @@ Colorgram.View = (function() {
 		} else {
 			mobileView = false
 		}
-		if (currentMobileStatus !== mobileView && mobileView) renderBaseColorbars()
+		if (currentMobileStatus !== mobileView && mobileView) {
+			renderBaseColorbars()
+		}
 	}
 
-	var tooltipsVisible = function(visibility) {
-		if (visibility) {
-			$controlBar.width("16rem")
-		} else {
-			$controlBar.width("8rem")
-		}
+	var toggleTooltips = function() {
+		console.log("tooltiping!")
+		$controlBar.toggleClass("open")
 	}
 
 	var renderBaseColorbars = function() {
