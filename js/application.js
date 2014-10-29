@@ -116,7 +116,6 @@ Colorgram.View = (function() {
 			id: ".control, .control-module",
 			browserEvent: "mouseenter",
 			fn: function(e) {
-				console.log("tooltip mouseenter")
 				if (!mobileView) toggleTooltips()
 			}
 		},
@@ -124,7 +123,6 @@ Colorgram.View = (function() {
 			id: ".control, .control-module",
 			browserEvent: "mouseleave",
 			fn: function(e) {
-				console.log("tooltip mouseleave")
 				if (!mobileView) toggleTooltips()
 			}
 		},
@@ -408,7 +406,6 @@ Colorgram.View = (function() {
 	}
 
 	var toggleTooltips = function() {
-		console.log("tooltiping!")
 		$controlBar.toggleClass("open")
 	}
 
