@@ -269,9 +269,6 @@ nav {
 	text-align: center;
 }
 
-button {
-	border: 0;
-}
 
 
 .button:active {
@@ -384,8 +381,26 @@ button {
 	color: #CC6600;
 }
 
+form {
+	margin-bottom: 5rem;
+}
+
+/*#color-form button.submit {
+	border: 0;
+	background-color: green;
+	height: 5rem;
+	width: 5rem;
+	padding: 0;
+	-webkit-appearance: none;
+}*/
+
 .button.submit {
 	background-color: #FFFFFF;
+	border: 0;
+	height: 5rem;
+	width: 5rem;
+	padding: 0;
+	-webkit-appearance: none
 }
 
 .button.submit:focus {
@@ -434,6 +449,7 @@ button {
 .tile .color-name {
 	font-size: 1.3rem;
 	margin: 0 0 .7rem 0;
+	letter-spacing: .25px;
 }
 
 .tile .color-build {
@@ -444,12 +460,13 @@ button {
 
 .tile .datetime {
 	margin: 0;
-	letter-spacing: .5px;
+	letter-spacing: .25px;
 	margin: .6rem 0 0 0;
 }
 
 .tile .location {
 	margin: .2rem 0 .7rem 0;
+	letter-spacing: .25px;
 }
 
 /* ====================================*/
@@ -478,13 +495,7 @@ button {
 
 #map-container {
 	width: 100%;
-	height: 440px;
-	background-color: #333333;
-	overflow: scroll;
-}
-
-#map-container::-webkit-scrollbar { 
-    display: none; 
+	background-color: #2b2b2b;
 }
 
 #map {

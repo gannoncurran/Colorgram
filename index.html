@@ -7,6 +7,7 @@
   
 	<link href='https://fonts.googleapis.com/css?family=Raleway:400,800' rel='stylesheet' type='text/css'>
 
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwoBQLdXCBaGaZ-JUj4efqMvlmhoerIAs&libraries=places"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="./js/flesler_jquery_scrollto_min.js"></script>
   <script src="./js/jquery.color-2.1.2.min.js"></script>
@@ -69,16 +70,18 @@
 
 	 <!-- FORM MOUNT POINT -->
 
-		<div id="color-form" class="nodisplay">
-			<div class="fancy-form">
-				<input id="colorgram-name-field" type="text" placeholder="Name your color." autofocus></div>
-			<div class="fancy-form field-button">
-				<input id="colorgram-place-field" type="text" placeholder="What's your city?"><p><span class="icon-pin-alt"></span></p></div>
-				<!-- <button type="submit"> -->
-				<button class="button submit" type="submit">
-					<span class="icon-checkmark"></span>
-				</button>
-				<!-- </button> -->
+	  <div id="form-container" class="nodisplay">
+	  	<form id="color-form">
+	  		<div class="fancy-form">
+	  			<input id="colorgram-name-field" type="text" placeholder="Name your color." autofocus>
+	  		</div>
+	  		<div class="fancy-form field-button">
+	  			<input id="colorgram-place-field" type="text" placeholder="What's your city?"><p><span class="icon-pin-alt"></span></p>
+	  		</div>
+	  		<button id="colorgram-submit-button" class="button submit" type="submit">
+	  			<span class="icon-checkmark"></span>
+	  		</button>
+	  	</form>
 		</div>
 
 	 <!-- RECENTS GRID MOUNT POINT -->
@@ -115,6 +118,20 @@
 			</div>
 		</div>
 	</div>
+
+<!-- 	<div id="form-template" class="nodisplay">
+		<form id="color-form">
+			<div class="fancy-form">
+				<input id="colorgram-name-field" type="text" placeholder="Name your color." autofocus>
+			</div>
+			<div class="fancy-form field-button">
+				<input id="colorgram-place-field" type="text" placeholder="What's your city?"><p><span class="icon-pin-alt"></span></p>
+			</div>
+			<button id="colorgram-submit-button" class="button submit" type="submit">
+				<span class="icon-checkmark"></span>
+			</button>
+		</form>
+	</div> -->
 
 	<div id="recents-tile-template" class="nodisplay">
 		<div class="tile">

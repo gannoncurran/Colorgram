@@ -2,12 +2,85 @@ var Colorgram = {}
 
 Colorgram.Map = (function() {
 
-	return {
-		
-		init: function() {
-			console.log("map init fired")
-		}
+	var $mapContainer, map, $pacInput, pac, bounds, pins = [], mapCreated = false
 
+	var grayMapTheme = [{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]}]
+
+	var mapOptions = {
+	  mapTypeId: google.maps.MapTypeId.ROADMAP,
+		zoom: 5,
+		center: {lat: 37.6, lng: -95.6},
+		mapTypeControl: false,
+		panControl: false,
+		zoomControl: true,
+		zoomControlOptions: {
+	    style: google.maps.ZoomControlStyle.SMALL
+	  },
+	  streetViewControl: false,
+	  styles: grayMapTheme
+	}
+
+	var setPins = function(colorgrams) {
+		var pin
+		var pinBounds = new google.maps.LatLngBounds();
+		colorgrams.forEach(function(cg){
+			var circleOptions = {
+				strokeColor: '#7F7F7F',
+				strokeOpacity: 1,
+				strokeWeight: 1,
+				fillColor: "hsl(" + cg.hue + "," + cg.sat + "%," + cg.lum + "%)",
+				fillOpacity: 1,
+				map: map,
+				center: {lat: cg.loc.lat, lng: cg.loc.lng},
+				radius: 30000
+			}
+			pin = new google.maps.Circle(circleOptions)
+	    pins.push(pin)
+	    pinBounds.extend(pin.center)
+		})
+	  bounds = pinBounds
+	  map.fitBounds(bounds)
+	  pinBounds = []
+	}
+
+	var clearPins = function() {
+  	pins.forEach(function(pin) {pin.setMap(null)})
+		pins = []
+	}
+
+	var sizeMapContainer = function() {
+		console.log("header height", $("header").height())
+		console.log("sizing map box")
+		$("#map-container").height($(window).height() - $("header").height())
+	}
+
+	return {
+
+  	renderMap: function() {
+			console.log("map init fired")
+				sizeMapContainer()
+				if (!mapCreated) {
+					$mapContainer = $("#map-container")
+				  map = new google.maps.Map($mapContainer[0], mapOptions)
+					mapCreated = true
+				}
+				google.maps.event.trigger(map, 'resize')
+				clearPins()
+				setPins(Colorgram.Model.all())
+	  },
+
+  	initPac: function() {
+			  $pacInput = $("#colorgram-place-field")
+			  pac = new google.maps.places.SearchBox($pacInput[0])
+	  },
+
+  	mapColorgrams: function(colorgrams) {
+  		setPins(colorgrams)
+  	},
+
+  	clearColorgrams: function() {
+  		clearPins()
+  	}
 	}
 	
 })()
@@ -22,74 +95,75 @@ Colorgram.Comm = (function() {
 	
 })()
 
+
 Colorgram.Model = (function() {
 	var colorgrams = [
-		{ id: "0",
+		{ id: 0,
 			name: "testgram", 
 			hue: 0, 
 			sat: 50, 
 			lum: 50, 
-			loc: {lat: 000, lng: 000}, 
+			loc: {lat: 37.7577, lng: -122.4376}, 
 			place: {name: "Place Name", lat: 000, lng: 000}, 
 			when: {date: "January 4, 2014", time: "2:45pm", timestamp: 0, utcOffset: -7 },
 			popularity: 0
 	  },
-  	{ id: "1",
+  	{ id: 1,
   		name: "testgram2", 
   		hue: 132, 
   		sat: 40, 
   		lum: 60, 
-  		loc: {lat: 000, lng: 000}, 
+  		loc: {lat: 37.8295949, lng: -122.1797646}, 
   		place: {name: "Place Name2", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
     },
-  	{ id: "2",
+  	{ id: 2,
   		name: "testgram3", 
   		hue: 234, 
   		sat: 80, 
   		lum: 20, 
-  		loc: {lat: 000, lng: 000}, 
+  		loc: {lat: 47.680920, lng: -117.232489}, 
   		place: {name: "Place Name3", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
     },
-  	{ id: "3",
+  	{ id: 3,
   		name: "testgram4", 
   		hue: 12, 
   		sat: 20, 
   		lum: 60, 
-  		loc: {lat: 000, lng: 000}, 
+  		loc: {lat: 37.949422, lng: -122.610463}, 
   		place: {name: "Place Name4", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
     },
-  	{ id: "4",
+  	{ id: 4,
   		name: "testgram5", 
   		hue: 12, 
   		sat: 0, 
   		lum: 50, 
-  		loc: {lat: 000, lng: 000}, 
+  		loc: {lat: 39.743065, lng: -121.804871}, 
   		place: {name: "Place Name5", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
     },
-  	{ id: "5",
+  	{ id: 5,
   		name: "testgram6", 
   		hue: 12, 
   		sat: 0, 
   		lum: 100, 
-  		loc: {lat: 000, lng: 000}, 
+  		loc: {lat: 47.617162, lng: -122.313247}, 
   		place: {name: "Place Name5", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
     },
-  	{ id: "6",
+  	{ id: 6,
   		name: "testgram7", 
   		hue: 12, 
   		sat: 0, 
   		lum: 0, 
-  		loc: {lat: 000, lng: 000}, 
+  		loc: {lat: 47.717159, lng: -121.970813}, 
   		place: {name: "Place Name5", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
   		popularity: 0
@@ -103,8 +177,16 @@ Colorgram.Model = (function() {
 			return colorgrams
 		},
 
-		all: function (){
+		all: function () {
 			return colorgrams
+		},
+
+		latest: function() {
+			return colorgrams[colorgrams.length-1]
+		},
+
+		count: function() {
+			return colorgrams.length
 		}
 
 	}
@@ -123,6 +205,7 @@ Colorgram.View = (function() {
 			$ctrlSat,
 			pressInterval,
 			clickTimeout,
+			headerHeight,
 			currentViewMode = "picker",
 			infiniteScroll = true,
 			mobileView = false,
@@ -140,7 +223,7 @@ Colorgram.View = (function() {
 
 	var viewComponents = {
 		picker: {name: "picker", mountPoint: "#color-bars"},
-		form: {name: "form", mountPoint: "#color-form"},
+		form: {name: "form", mountPoint: "#form-container"},
 		recents: {name: "recents", mountPoint: "#recents-grid"},
 		map: {name: "map", mountPoint: "#map-container"}
 	}
@@ -180,7 +263,7 @@ Colorgram.View = (function() {
 			id: "#button-picker",
 			browserEvent: "click",
 			fn: function(e) {
-				infiniteScroll = true
+				// infiniteScroll = true
 				setViewMode.picker()
 			}
 		},
@@ -188,7 +271,7 @@ Colorgram.View = (function() {
 			id: "#button-recents",
 			browserEvent: "click",
 			fn: function(e) {
-				infiniteScroll = false
+				// infiniteScroll = false
 				setViewMode.recents()
 			}
 		},
@@ -196,7 +279,7 @@ Colorgram.View = (function() {
 			id: "#button-map",
 			browserEvent: "click",
 			fn: function(e) {
-				infiniteScroll = false
+				// infiniteScroll = false
 				setViewMode.map()
 			}
 		},
@@ -308,6 +391,14 @@ Colorgram.View = (function() {
 			}
 		},
 		{
+			id: "#colorgram-submit-button",
+			browserEvent: "click",
+			fn: function(e) {
+				e.preventDefault()
+				submitColorgram()
+			}
+		},
+		{
 			id: $(window),
 			browserEvent: "scroll",
 			fn: function(e) {
@@ -334,6 +425,8 @@ Colorgram.View = (function() {
 		$ctrlMap = $("#ctrl-map")
 		$ctrlLum = $("#ctrl-lum")
 		$ctrlSat = $("#ctrl-sat")
+		$fieldName = $("#colorgram-name-field")
+		$fieldPlace = $("#colorgram-place-field")
 	}
 
 	var bindListeners = function() {
@@ -358,10 +451,16 @@ Colorgram.View = (function() {
 	}
 
 	var generateBGColor = function(hue, sat, lum) {
+
 		return "hsl(" + hue + "," + sat + "%," + lum + "%)"
 	}
 
 	var setViewMode = (function() {
+
+		var clearForm = function() {
+			$fieldName.val("")
+			$fieldPlace.val("")
+		}
 
 		var setBackgroundColor = function(mode) {
 			if (mode === "form") {
@@ -407,11 +506,10 @@ Colorgram.View = (function() {
 		var transitionView = function(component) {
 			if (component === "form") {
 				// if going to the form, setBG immediately
-				// fade out, change states, fade in
 				setBackgroundColor(component)
 			} else if (currentViewMode === "form" && component !== "picker") {
 				// if we're on the form and NOT going to the picker
-				// fade the background color to gray, fade components, set state, fadein
+				// fade the background color to gray
 				$('html').animate({backgroundColor: "#111111"}, 250)
 			}
 			$viewModeWrapper.fadeOut(250, function() {
@@ -423,7 +521,10 @@ Colorgram.View = (function() {
 			})
 			$header.fadeOut(250, function() {
 				setHeaderState(component)
-				$header.fadeIn(250)
+				$header.fadeIn(250, function() {
+					// map render depends on header size, so rendering map here
+					if (component === "map") Colorgram.Map.renderMap()
+				})
 			})
 			$controlBar.fadeOut(250, function() {
 				setControlBarState(component)
@@ -433,13 +534,24 @@ Colorgram.View = (function() {
 		}
 
 		return {
-			picker: 	function() { transitionView("picker") },
-			form: 		function() { transitionView("form") },
+			picker: 	function() { 
+									infiniteScroll = (mobileView) ? false : true
+									transitionView("picker") 
+								},
+			form: 		function() { 
+									infiniteScroll = false
+									clearForm()
+									transitionView("form") 
+								},
 			recents: 	function() {
+									infiniteScroll = false
 									transitionView("recents")
 									renderRecents()
 								},
-			map: 			function() { transitionView("map")	}
+			map: 			function() { 
+									infiniteScroll = false
+									transitionView("map")
+								}
 		}
 
 	})()
@@ -450,7 +562,7 @@ Colorgram.View = (function() {
 			infiniteScroll = false
 			mobileView = true
 		} else {
-			if (currentViewMode === "picker") infiniteScroll = true
+			infiniteScroll = (currentViewMode === "picker") ? true : false
 			mobileView = false
 		}
 		if (currentMobileStatus !== mobileView && mobileView) {
@@ -475,25 +587,6 @@ Colorgram.View = (function() {
 			$(bar).hide().appendTo(viewComponents.picker.mountPoint).delay(fadeDelay).fadeIn(500)
 			fadeDelay += 75
 		}
-	}
-
-	var renderRecents = function() {
-		var colorgrams = Colorgram.Model.all()
-		var fadeDelay = 0
-		$(".tile").remove()
-		for (var i in colorgrams) {
-			var c = colorgrams[i]
-			// name, when.date, when.time, place.name, hue, sat, lum 
-			var tile = $(Templates.recentsTile)
-			$(tile).css("background-color", generateBGColor(c.hue, c.sat, c.lum))
-			$(tile).children(".color-name").text(c.name)
-			if (c.lum < 50) $(tile).addClass("reverse")
-			$(tile).children(".datetime").text(c.when.date+" | "+c.when.time)
-			$(tile).children(".location").text(c.place.name)
-			$(tile).children(".color-build").text("HSL: "+c.hue+", "+c.sat+"%, "+c.lum+"%")
-			$(tile).hide().appendTo($(viewComponents.recents.mountPoint)).delay(fadeDelay).fadeIn(500)
-			fadeDelay += 75
-		}	
 	}
 
 	var rotateColorbars = function() {
@@ -585,6 +678,43 @@ Colorgram.View = (function() {
 		}
 	}
 
+	var submitColorgram = function() {
+		var cgName = $("#colorgram-name-field").val()
+		var cgPlace = $("#colorgram-place-field").val()
+		var cg = {
+			id: Colorgram.Model.count(),
+			name: cgName, 
+			hue: currentColorPick.hue, 
+			sat: currentColorPick.sat, 
+			lum: currentColorPick.lum, 
+			loc: {lat: 000, lng: 000}, 
+			place: {name: cgPlace, lat: 000, lng: 000}, 
+			when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
+			popularity: 0
+		}
+		Colorgram.Model.add(cg)
+		setViewMode.recents()
+	}
+
+	var renderRecents = function() {
+		var colorgrams = Colorgram.Model.all()
+		var fadeDelay = 0
+		$(".tile").remove()
+		for (var i = colorgrams.length-1; i > -1; i --) {
+			var c = colorgrams[i]
+			// name, when.date, when.time, place.name, hue, sat, lum 
+			var tile = $(Templates.recentsTile)
+			$(tile).css("background-color", generateBGColor(c.hue, c.sat, c.lum))
+			$(tile).children(".color-name").text(c.name)
+			if (c.lum < 50) $(tile).addClass("reverse")
+			$(tile).children(".datetime").text(c.when.date+" | "+c.when.time)
+			$(tile).children(".location").text(c.place.name)
+			$(tile).children(".color-build").text("HSL: "+c.hue+", "+c.sat+"%, "+c.lum+"%")
+			$(tile).hide().appendTo($(viewComponents.recents.mountPoint)).delay(fadeDelay).fadeIn(500)
+			fadeDelay += 75
+		}	
+	}
+
 	$(document).ready(function() {
 		Colorgram.initialize()
 	});
@@ -596,17 +726,12 @@ Colorgram.View = (function() {
 			bindListeners()
 			renderBaseColorbars()
 			updateMobileViewStatus()
-			console.log("infinitescroll set to: ", infiniteScroll)
 		}
 	}
 	
 })()
 
-
 Colorgram.initialize = function() {
-
-	console.log("Initializing google map and places autocomplete")
-	Colorgram.Map.init()
 
 	console.log("Fetching recent colorgrams from server")
 	Colorgram.Comm.getRecents()
@@ -614,14 +739,13 @@ Colorgram.initialize = function() {
 	console.log("Initializing view")
 	Colorgram.View.init()
 
-	// console.log("Testing colorgram model")
-	// var grams = Colorgram.Model.all()
-	// console.log(grams)
+	console.log("Initializing pac")
+	Colorgram.Map.initPac()
+
 }
 
 
 
-// var grayMapTheme = [{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]}]
 
 
 
