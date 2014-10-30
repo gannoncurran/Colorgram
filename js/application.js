@@ -24,19 +24,24 @@ Colorgram.Map = (function() {
 		var pin
 		var pinBounds = new google.maps.LatLngBounds();
 		colorgrams.forEach(function(cg){
-			var circleOptions = {
-				strokeColor: '#7F7F7F',
-				strokeOpacity: 1,
-				strokeWeight: 1,
-				fillColor: "hsl(" + cg.hue + "," + cg.sat + "%," + cg.lum + "%)",
-				fillOpacity: 1,
+			var latlng = new google.maps.LatLng(cg.loc.lat, cg.loc.lng)
+			var markerOptions = {
+				icon: {
+		      path: google.maps.SymbolPath.CIRCLE,
+		      scale: 16,
+		      strokeColor: "#444444",
+		      strokeWeight: 1.5,
+		      fillColor: "hsl(" + cg.hue + "," + cg.sat + "%," + cg.lum + "%)",
+		      fillOpacity: .8,
+		    },
+				position: {lat: cg.loc.lat, lng: cg.loc.lng},
 				map: map,
-				center: {lat: cg.loc.lat, lng: cg.loc.lng},
-				radius: 30000
+				draggable: true,
+				title: cg.name
 			}
-			pin = new google.maps.Circle(circleOptions)
+			pin = new google.maps.Marker(markerOptions)
 	    pins.push(pin)
-	    pinBounds.extend(pin.center)
+	    pinBounds.extend(latlng)
 		})
 	  bounds = pinBounds
 	  map.fitBounds(bounds)
