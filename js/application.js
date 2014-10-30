@@ -23,14 +23,16 @@ Colorgram.Map = (function() {
 	var setPins = function(colorgrams) {
 		var pin
 		var pinBounds = new google.maps.LatLngBounds();
+
 		colorgrams.forEach(function(cg){
+			var scaleFactor = Math.sqrt((cg.popularity + 1))
 			var latlng = new google.maps.LatLng(cg.loc.lat, cg.loc.lng)
 			var markerOptions = {
 				icon: {
 		      path: google.maps.SymbolPath.CIRCLE,
-		      scale: 16,
+		      scale: 10 * scaleFactor,
 		      strokeColor: "#444444",
-		      strokeWeight: 1.5,
+		      strokeWeight: 0,
 		      fillColor: "hsl(" + cg.hue + "," + cg.sat + "%," + cg.lum + "%)",
 		      fillOpacity: .8,
 		    },
@@ -43,6 +45,7 @@ Colorgram.Map = (function() {
 	    pins.push(pin)
 	    pinBounds.extend(latlng)
 		})
+
 	  bounds = pinBounds
 	  map.fitBounds(bounds)
 	  pinBounds = []
@@ -54,8 +57,6 @@ Colorgram.Map = (function() {
 	}
 
 	var sizeMapContainer = function() {
-		console.log("header height", $("header").height())
-		console.log("sizing map box")
 		$("#map-container").height($(window).height() - $("header").height())
 	}
 
@@ -75,17 +76,14 @@ Colorgram.Map = (function() {
 	  },
 
   	initPac: function() {
-			  $pacInput = $("#colorgram-place-field")
-			  pac = new google.maps.places.SearchBox($pacInput[0])
+		  $pacInput = $("#colorgram-place-field")
+		  pac = new google.maps.places.SearchBox($pacInput[0])
 	  },
 
-  	mapColorgrams: function(colorgrams) {
-  		setPins(colorgrams)
-  	},
+	  getPac: function() {
+	  	return pac
+	  }
 
-  	clearColorgrams: function() {
-  		clearPins()
-  	}
 	}
 	
 })()
@@ -111,7 +109,7 @@ Colorgram.Model = (function() {
 			loc: {lat: 37.7577, lng: -122.4376}, 
 			place: {name: "Place Name", lat: 000, lng: 000}, 
 			when: {date: "January 4, 2014", time: "2:45pm", timestamp: 0, utcOffset: -7 },
-			popularity: 0
+			popularity: 2
 	  },
   	{ id: 1,
   		name: "testgram2", 
@@ -121,7 +119,7 @@ Colorgram.Model = (function() {
   		loc: {lat: 37.8295949, lng: -122.1797646}, 
   		place: {name: "Place Name2", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 0
+  		popularity: 4
     },
   	{ id: 2,
   		name: "testgram3", 
@@ -131,7 +129,7 @@ Colorgram.Model = (function() {
   		loc: {lat: 47.680920, lng: -117.232489}, 
   		place: {name: "Place Name3", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 0
+  		popularity: 1
     },
   	{ id: 3,
   		name: "testgram4", 
@@ -151,7 +149,7 @@ Colorgram.Model = (function() {
   		loc: {lat: 39.743065, lng: -121.804871}, 
   		place: {name: "Place Name5", lat: 000, lng: 000}, 
   		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 0
+  		popularity: 6
     },
   	{ id: 5,
   		name: "testgram6", 
@@ -684,6 +682,8 @@ Colorgram.View = (function() {
 	}
 
 	var submitColorgram = function() {
+		var pacLat = Colorgram.Map.getPac().getPlaces()[0].geometry.location.k
+		var pacLng = Colorgram.Map.getPac().getPlaces()[0].geometry.location.B
 		var cgName = $("#colorgram-name-field").val()
 		var cgPlace = $("#colorgram-place-field").val()
 		var cg = {
@@ -692,7 +692,7 @@ Colorgram.View = (function() {
 			hue: currentColorPick.hue, 
 			sat: currentColorPick.sat, 
 			lum: currentColorPick.lum, 
-			loc: {lat: 000, lng: 000}, 
+			loc: {lat: pacLat, lng: pacLng}, 
 			place: {name: cgPlace, lat: 000, lng: 000}, 
 			when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
 			popularity: 0
