@@ -63,7 +63,6 @@ Colorgram.Map = (function() {
 	return {
 
   	renderMap: function() {
-			console.log("map init fired")
 				sizeMapContainer()
 				if (!mapCreated) {
 					$mapContainer = $("#map-container")
@@ -90,94 +89,127 @@ Colorgram.Map = (function() {
 
 Colorgram.Comm = (function() {
 
-	return {
-		getRecents: function() {
-			console.log("get recents via ajax from server fired")
+	var colorgramDB
+
+	var configDB = function() {
+		var dbOptions = {
+			apiVersion: '2012-08-10',
+			sslEnabled: true,
+			endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
 		}
+		AWS.config.update({accessKeyId: 'AKIAIVW7GHJJMH2LCLQQ', secretAccessKey: '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'})
+		AWS.config.region = 'us-west-2'
+		colorgramDB = new AWS.DynamoDB(dbOptions);
+	}
+
+	var cgReadAll = function() {
+		var getRecent = {
+			ConsistentRead: true,
+	    TableName: 'Colorgrams',
+	    KeyConditions: {
+	    	'userId': {
+	    		AttributeValueList: [{'N':'0'}],
+	    		ComparisonOperator: 'EQ'
+	    	},
+	    	'cgTimestamp': {
+	    		AttributeValueList: [{'N':''+(Date.now()-86400000)}, {'N':''+Date.now()}],
+	    		ComparisonOperator: 'BETWEEN'
+	    	}
+	    },
+	    Limit: '100'
+		}
+		colorgramDB.query(getRecent, function(err, data) {
+			if (err) {	
+				console.log(err, err.stack)
+			} else {
+				Colorgram.Model.add(parseResponse(data.Items))
+			}			
+		})
+	}
+
+	var parseResponse = function(r) {
+		var cleanGrams = []
+		for (var i in r) {
+			var parsedCg = {
+				userId: Number(r[i].userId.N),
+				cgTimestamp: Number(r[i].cgTimestamp.N),
+				name: r[i].name.S, 
+				hue: Number(r[i].hue.N), 
+				sat: Number(r[i].sat.N), 
+				lum: Number(r[i].lum.N), 
+				loc: {lat: Number(r[i].loc.M.lat.N), lng: Number(r[i].loc.M.lng.N)}, 
+				place: {name: r[i].place.M.name.S}, 
+				when: {date: r[i].when.M.date.S, time: r[i].when.M.time.S},
+				popularity: Number(r[i].popularity.N)
+			}
+			cleanGrams.push(parsedCg)
+		}
+		return cleanGrams
+	}
+
+	var cgCreate = function(cg) {
+		var newCG = {
+	    TableName: 'Colorgrams',
+	    Item: {
+	    	'userId': {'N': '0'}, 
+	    	'cgTimestamp': {'N': ''+cg.cgTimestamp},
+	    	'name': {'S': ''+cg.name},
+	    	'hue': {'N': ''+cg.hue},
+	    	'sat': {'N': ''+cg.sat},
+	    	'lum': {'N': ''+cg.lum},
+	    	'loc': {
+	    		'M': {
+	    			'lat': {'N': ''+cg.loc.lat},
+	    			'lng': {'N': ''+cg.loc.lng}
+	    		}
+	    	},
+	    	'place': {
+	    		'M': {
+	    			'name': {'S': ''+cg.place.name}
+	    		}
+	    	},
+	    	'when': {
+	    		'M': {
+	    			'date': {'S': ''+cg.when.date},
+	    			'time': {'S': ''+cg.when.time}
+	    		}
+	    	},
+	    	'popularity': {'N': ''+cg.popularity}
+	    },
+	  }
+		colorgramDB.putItem(newCG, function(err, data) {
+		    if (err)    console.log(err, err.stack)
+		    else        console.log(data)
+		})
+	}
+
+	return {
+
+		init: function() {
+			configDB()
+		},
+
+		getRecents: function() {
+			// console.log("get recents via ajax from server fired")
+			cgReadAll()
+		},
+
+		postNew: function (colorgram) {
+			// console.log("posting new colorgram to database")
+			cgCreate(colorgram)
+		}
+
 	}
 	
 })()
 
-
 Colorgram.Model = (function() {
-	var colorgrams = [
-		{ id: 0,
-			name: "testgram", 
-			hue: 0, 
-			sat: 50, 
-			lum: 50, 
-			loc: {lat: 37.7577, lng: -122.4376}, 
-			place: {name: "Place Name", lat: 000, lng: 000}, 
-			when: {date: "January 4, 2014", time: "2:45pm", timestamp: 0, utcOffset: -7 },
-			popularity: 2
-	  },
-  	{ id: 1,
-  		name: "testgram2", 
-  		hue: 132, 
-  		sat: 40, 
-  		lum: 60, 
-  		loc: {lat: 37.8295949, lng: -122.1797646}, 
-  		place: {name: "Place Name2", lat: 000, lng: 000}, 
-  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 4
-    },
-  	{ id: 2,
-  		name: "testgram3", 
-  		hue: 234, 
-  		sat: 80, 
-  		lum: 20, 
-  		loc: {lat: 47.680920, lng: -117.232489}, 
-  		place: {name: "Place Name3", lat: 000, lng: 000}, 
-  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 1
-    },
-  	{ id: 3,
-  		name: "testgram4", 
-  		hue: 12, 
-  		sat: 20, 
-  		lum: 60, 
-  		loc: {lat: 37.949422, lng: -122.610463}, 
-  		place: {name: "Place Name4", lat: 000, lng: 000}, 
-  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 0
-    },
-  	{ id: 4,
-  		name: "testgram5", 
-  		hue: 12, 
-  		sat: 0, 
-  		lum: 50, 
-  		loc: {lat: 39.743065, lng: -121.804871}, 
-  		place: {name: "Place Name5", lat: 000, lng: 000}, 
-  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 6
-    },
-  	{ id: 5,
-  		name: "testgram6", 
-  		hue: 12, 
-  		sat: 0, 
-  		lum: 100, 
-  		loc: {lat: 47.617162, lng: -122.313247}, 
-  		place: {name: "Place Name5", lat: 000, lng: 000}, 
-  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 0
-    },
-  	{ id: 6,
-  		name: "testgram7", 
-  		hue: 12, 
-  		sat: 0, 
-  		lum: 0, 
-  		loc: {lat: 47.717159, lng: -121.970813}, 
-  		place: {name: "Place Name5", lat: 000, lng: 000}, 
-  		when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-  		popularity: 0
-    }
-	]
+	var colorgrams = []
 
 	return {
 
-		add: function (colorgram) {
-			colorgrams.push(colorgram)
-			return colorgrams
+		add: function (cgArray) {
+			cgArray.forEach(function(colorgram) {colorgrams.push(colorgram)})
 		},
 
 		all: function () {
@@ -686,18 +718,22 @@ Colorgram.View = (function() {
 		var pacLng = Colorgram.Map.getPac().getPlaces()[0].geometry.location.B
 		var cgName = $("#colorgram-name-field").val()
 		var cgPlace = $("#colorgram-place-field").val()
+		var d = new Date()
+		var cgPop = Math.random() * (7 - 1) + 1
 		var cg = {
-			id: Colorgram.Model.count(),
+			userId: 0,
+			cgTimestamp: d.getTime(),
 			name: cgName, 
 			hue: currentColorPick.hue, 
 			sat: currentColorPick.sat, 
 			lum: currentColorPick.lum, 
 			loc: {lat: pacLat, lng: pacLng}, 
-			place: {name: cgPlace, lat: 000, lng: 000}, 
-			when: {date: "June 13, 1973", time: "1:00am", timestamp: 0, utcOffset: -7 },
-			popularity: 0
+			place: {name: cgPlace}, 
+			when: {date: d.toLocaleDateString(), time: d.toLocaleTimeString()},
+			popularity: cgPop
 		}
-		Colorgram.Model.add(cg)
+		Colorgram.Model.add([cg])
+		Colorgram.Comm.postNew(cg)
 		setViewMode.recents()
 	}
 
@@ -738,20 +774,16 @@ Colorgram.View = (function() {
 
 Colorgram.initialize = function() {
 
-	console.log("Fetching recent colorgrams from server")
+	// console.log("initializing AWS DynamoDB")
+	Colorgram.Comm.init()
+
+	// console.log("retrieving recent colorgrams from AWS DynamoDB")
 	Colorgram.Comm.getRecents()
 
-	console.log("Initializing view")
+	// console.log("Initializing view")
 	Colorgram.View.init()
 
-	console.log("Initializing pac")
+	// console.log("Initializing pac")
 	Colorgram.Map.initPac()
 
 }
-
-
-
-
-
-
-
