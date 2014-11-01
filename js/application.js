@@ -111,10 +111,10 @@ Colorgram.Comm = (function() {
 	    		AttributeValueList: [{'N':'0'}],
 	    		ComparisonOperator: 'EQ'
 	    	},
-	    	'cgTimestamp': {
-	    		AttributeValueList: [{'N':''+(Date.now()-86400000)}, {'N':''+Date.now()}],
-	    		ComparisonOperator: 'BETWEEN'
-	    	}
+	    	// 'cgTimestamp': {
+	    	// 	AttributeValueList: [{'N':''+(Date.now()-86400000)}, {'N':''+Date.now()}],
+	    	// 	ComparisonOperator: 'BETWEEN'
+	    	// }
 	    },
 	    Limit: '100'
 		}
