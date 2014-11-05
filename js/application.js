@@ -26,12 +26,13 @@ Colorgram.Map = (function() {
 
 		colorgrams.forEach(function(cg){
 			var scaleFactor = Math.sqrt((cg.popularity + 1))
+			var browserWidth = $(window).width()
 			var latlng = new google.maps.LatLng(cg.loc.lat, cg.loc.lng)
 			var markerOptions = {
 				icon: {
 		      path: google.maps.SymbolPath.CIRCLE,
-		      scale: 10 * scaleFactor,
-		      strokeColor: "#444444",
+		      scale: (browserWidth * .01) * scaleFactor,
+		      strokeColor: "#FFFFFF",
 		      strokeWeight: 0,
 		      fillColor: "hsl(" + cg.hue + "," + cg.sat + "%," + cg.lum + "%)",
 		      fillOpacity: .8,
@@ -857,7 +858,8 @@ Colorgram.View = (function() {
 			$(tile).css("background-color", generateBGColor(c.hue, c.sat, c.lum))
 			$(tile).children(".color-name").text(c.name)
 			if (c.lum < 50) $(tile).addClass("reverse")
-			$(tile).children(".datetime").text(c.when.date+" | "+c.when.time)
+			$(tile).children(".date").text(c.when.date)
+			$(tile).children(".time").text(c.when.time)
 			$(tile).children(".location").text(c.place.name)
 			$(tile).children(".color-build").text("HSL: "+c.hue+", "+c.sat+"%, "+c.lum+"%")
 			$(tile).hide().appendTo($(viewComponents.recents.mountPoint)).delay(fadeDelay).fadeIn(500)

@@ -486,10 +486,14 @@ form {
 	font-size: .9rem;
 }
 
-.tile .datetime {
-	margin: 0;
+.tile .date {
 	letter-spacing: .25px;
 	margin: .6rem 0 0 0;
+}
+
+.tile .time {
+	letter-spacing: .25px;
+	margin: .2rem 0 0 0; 
 }
 
 .tile .location {
