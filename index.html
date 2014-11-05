@@ -25,6 +25,14 @@
 
 	<div id="control-bar-bg"></div>
 
+	<div id="about" class="nodisplay">
+		<h2>Colorgram</h2>
+		<h4>Concept: <a href="http://aleksandrapollner.com" target="_blank">Aleksandra&nbsp;Pollner,</a> <a href="http://www.charlieschuck.com/" target="_blank">Charlie&nbsp;Schuck</a></h4>
+		<h4>Design & Code: <a href="http://gannoncurran.com" target="_blank">Gannon&nbsp;Curran</a></h4>
+		<p>Colorgram is the brainchild of Detroit based artist Aleks Pollner, and Seattle photographer Charlie Schuck. Design and development was completed by Gannon Curran, a graphic designer and web developer who lives in San Francisco.</p>
+		<p id="button-about-close" class="icon-arrow"></p>
+	</div>
+
 	<nav>
 		<div id="control-bar">
 			<div id="ctrl-picker" class="control bumper tooltip-parent" style="display: none">
@@ -51,6 +59,10 @@
 				<p id="button-satup" class="arrow"><span class="icon-arrow-down"></span></p>
 				<p class="tooltip saturation hidden_button">Cloudiness</p>
 			</div>
+			<div id="ctrl-about" class="control bumper tooltip-parent">
+				<p id="button-about" class="control-icon"><span class="icon-info"></span></p>
+				<p class="tooltip about hidden_button">About</p>
+			</div>
 		</div>
 	</nav>
 
@@ -73,10 +85,10 @@
 	  <div id="form-container" class="nodisplay">
 	  	<form id="color-form">
 	  		<div class="fancy-form">
-	  			<input id="colorgram-name-field" type="text" placeholder="Name your color." autofocus>
+	  			<input id="colorgram-name-field" type="text" placeholder="Name your color.">
 	  		</div>
 	  		<div class="fancy-form field-button">
-	  			<input id="colorgram-place-field" type="text" placeholder="What's your city?"><p><span class="icon-pin-alt"></span></p>
+	  			<input id="colorgram-place-field" type="text" placeholder="What's your city?"><p><span  id="auto-locate" class="icon-pin-alt"></span></p>
 	  		</div>
 	  		<button id="colorgram-submit-button" class="button submit" type="submit">
 	  			<span class="icon-checkmark"></span>

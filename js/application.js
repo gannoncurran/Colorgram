@@ -77,11 +77,16 @@ Colorgram.Map = (function() {
   	initPac: function() {
 		  $pacInput = $("#colorgram-place-field")
 		  pac = new google.maps.places.SearchBox($pacInput[0])
-	  },
-
-	  getPac: function() {
-	  	return pac
+		  google.maps.event.addListener(pac, 'places_changed', function() {
+		  	var lat = pac.getPlaces()[0].geometry.location.k
+		  	var lng = pac.getPlaces()[0].geometry.location.B
+		  	Colorgram.View.setLatLng(lat, lng)
+		  })
 	  }
+
+	  // getPac: function() {
+	  // 	return pac
+	  // }
 
 	}
 	
@@ -179,7 +184,6 @@ Colorgram.Comm = (function() {
 	  }
 		colorgramDB.putItem(newCG, function(err, data) {
 		    if (err)    console.log(err, err.stack)
-		    else        console.log(data)
 		})
 	}
 
@@ -201,6 +205,75 @@ Colorgram.Comm = (function() {
 
 	}
 	
+})()
+
+Colorgram.Geo = (function() {
+
+	var reverseGeocode = function(lat, lng) {
+		var key = "AIzaSyCwoBQLdXCBaGaZ-JUj4efqMvlmhoerIAs"
+		var resultTypes = "natural_feature&result_type=postal_code&result_type=neighborhood&location_type=APPROXIMATE"
+		var baseURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
+
+		var request = $.ajax({
+		  url:      ""+baseURL+lat+","+lng+"&key="+key+"&result_type="+resultTypes, 
+		  get:      "GET",
+		  dataType: "json",
+		  timeout:  7000,
+		})
+
+		request.done(function(ajaxResponse) {
+			console.log(ajaxResponse)
+		  if (ajaxResponse["status"] === "OK") {
+		  	var place = selectPreferredPlace(ajaxResponse["results"])
+		  	console.log(place)
+		  	Colorgram.View.setPlace(place)
+		  } else {
+		  	console.log("Lat: "+lat+", Lng:"+lng)
+		  	Colorgram.View.setPlace("Lat: "+lat+", Lng:"+lng)
+		  }
+
+		})
+
+		request.fail(function(ajaxResponse) {
+	  	Colorgram.View.setPlace("You'll have to type ;(")
+		})
+
+	}
+
+	var selectPreferredPlace = function(places) {
+
+		console.log("preferred: ", places)
+		console.log("length: ", places.length)
+
+		if (places.length === 1) return places[0]["formatted_address"]
+
+		var greatestPostalCodeIndex = -Infinity
+		var leastNaturalFeatureIndex = Infinity
+
+		for (var i = places.length -1; i > -1; i --) {
+			if (places[i].types.indexOf('neighborhood') !== -1) return places[i]["formatted_address"]
+			if (places[i].types.indexOf('postal_code') !== -1 && i > greatestPostalCodeIndex) greatestPostalCodeIndex = i
+			if (places[i].types.indexOf('natural_feature') !== -1 && i < leastNaturalFeatureIndex) leastNaturalFeatureIndex = i 
+		}
+
+		if (greatestPostalCodeIndex !== -Infinity) {
+			return places[greatestPostalCodeIndex]["formatted_address"]
+		} else if (leastNaturalFeatureIndex !== Infinity) {
+			return places[leastNaturalFeatureIndex]["formatted_address"]
+		} else {
+			return places[0]["formatted_address"]
+		}
+
+	}
+
+	return {
+
+		getPlace: function(lat, lng) {
+			reverseGeocode(lat, lng)
+		}
+
+	}
+
 })()
 
 Colorgram.Model = (function() {
@@ -241,6 +314,8 @@ Colorgram.View = (function() {
 			pressInterval,
 			clickTimeout,
 			headerHeight,
+			colorgramLat = 0,
+			colorgramLng = 0,
 			currentViewMode = "picker",
 			infiniteScroll = true,
 			mobileView = false,
@@ -298,7 +373,6 @@ Colorgram.View = (function() {
 			id: "#button-picker",
 			browserEvent: "click",
 			fn: function(e) {
-				// infiniteScroll = true
 				setViewMode.picker()
 			}
 		},
@@ -306,7 +380,6 @@ Colorgram.View = (function() {
 			id: "#button-recents",
 			browserEvent: "click",
 			fn: function(e) {
-				// infiniteScroll = false
 				setViewMode.recents()
 			}
 		},
@@ -314,8 +387,21 @@ Colorgram.View = (function() {
 			id: "#button-map",
 			browserEvent: "click",
 			fn: function(e) {
-				// infiniteScroll = false
 				setViewMode.map()
+			}
+		},
+		{
+			id: "#button-about",
+			browserEvent: "click",
+			fn: function(e) {
+				$("#about").hide().removeClass().fadeIn(250)
+			}
+		},
+		{
+			id: "#button-about-close",
+			browserEvent: "click",
+			fn: function(e) {
+				$("#about").fadeOut(250).addClass("nodisplay").show()
 			}
 		},
 		{
@@ -426,6 +512,28 @@ Colorgram.View = (function() {
 			}
 		},
 		{
+			id: "#auto-locate",
+			browserEvent: "mouseenter",
+			fn: function(e) {
+				if (!mobileView) $("#colorgram-place-field").prop("placeholder", "Locate Me!")
+			}
+		},
+		{
+			id: "#auto-locate",
+			browserEvent: "mouseleave",
+			fn: function(e) {
+				if (!mobileView) $("#colorgram-place-field").prop("placeholder", "What's your city?")
+			}
+		},
+		{
+			id: "#auto-locate",
+			browserEvent: "click",
+			fn: function(e) {
+				e.preventDefault()
+				autoLocate()
+			}
+		},
+		{
 			id: "#colorgram-submit-button",
 			browserEvent: "click",
 			fn: function(e) {
@@ -462,6 +570,7 @@ Colorgram.View = (function() {
 		$ctrlSat = $("#ctrl-sat")
 		$fieldName = $("#colorgram-name-field")
 		$fieldPlace = $("#colorgram-place-field")
+		$fieldPlaceLocate = $("#auto-locate")
 	}
 
 	var bindListeners = function() {
@@ -495,6 +604,10 @@ Colorgram.View = (function() {
 		var clearForm = function() {
 			$fieldName.val("")
 			$fieldPlace.val("")
+		}
+
+		var setAutolocate = function() {
+			(navigator.geolocation) ? $fieldPlaceLocate.show() : $fieldPlaceLocate.hide()
 		}
 
 		var setBackgroundColor = function(mode) {
@@ -575,6 +688,7 @@ Colorgram.View = (function() {
 								},
 			form: 		function() { 
 									infiniteScroll = false
+									setAutolocate()
 									clearForm()
 									transitionView("form") 
 								},
@@ -714,8 +828,11 @@ Colorgram.View = (function() {
 	}
 
 	var submitColorgram = function() {
-		var pacLat = Colorgram.Map.getPac().getPlaces()[0].geometry.location.k
-		var pacLng = Colorgram.Map.getPac().getPlaces()[0].geometry.location.B
+		// fix this with a global that gets set when the google place box updates!!
+		var pacLat = colorgramLat
+		// var pacLat = Colorgram.Map.getPac().getPlaces()[0].geometry.location.k
+		var pacLng = colorgramLng
+		// var pacLng = Colorgram.Map.getPac().getPlaces()[0].geometry.location.B
 		var cgName = $("#colorgram-name-field").val()
 		var cgPlace = $("#colorgram-place-field").val()
 		var d = new Date()
@@ -756,6 +873,45 @@ Colorgram.View = (function() {
 		}	
 	}
 
+	var autoLocate = function() {
+		var latLng
+		var place
+		$fieldPlace.prop("placeholder", "Getting Location...")
+		if (navigator.geolocation) {
+
+			$fieldPlaceLocate.off("mouseenter")
+			$fieldPlaceLocate.off("mouseleave")
+
+	    navigator.geolocation.getCurrentPosition(function(position) {
+
+		    colorgramLat = position.coords.latitude
+		    colorgramLng = position.coords.longitude
+
+	    	place = Colorgram.Geo.getPlace(colorgramLat, colorgramLng)
+	    	$fieldPlace.val(place)
+
+		    $fieldPlaceLocate.on("mouseenter", function(e) {
+		    	$fieldPlace.prop("placeholder", "Locate Me!")
+		    })
+		    $fieldPlaceLocate.on("mouseleave", function(e) {
+		    	$fieldPlace.prop("placeholder", "What's your city?")
+		    })
+
+	    },
+	    function(error) {
+	    	console.log(error)
+				$fieldPlace.prop("placeholder", "You'll have to type ;(")
+	    })
+		} else { 
+			$fieldPlace.prop("placeholder", "You'll have to type. :(")
+	    console.log("Geolocation is not supported by this browser.")
+		}
+	}
+
+	var setPlaceFieldValue = function(place) {
+		$fieldPlace.prop("value", place)
+	}
+
 	$(document).ready(function() {
 		Colorgram.initialize()
 	});
@@ -767,7 +923,15 @@ Colorgram.View = (function() {
 			bindListeners()
 			renderBaseColorbars()
 			updateMobileViewStatus()
+		},
+		setPlace: function(place) {
+			setPlaceFieldValue(place)
+		},
+		setLatLng: function(lat, lng) {
+			colorgramLat = lat
+			colorgramLng = lng
 		}
+
 	}
 	
 })()

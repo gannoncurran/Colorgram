@@ -1,11 +1,11 @@
 /* Icon font setup*/
 @font-face {
 	font-family: 'icomoon';
-	src:url('../fonts/icomoon.eot?3ee7eq');
-	src:url('../fonts/icomoon.eot?#iefix3ee7eq') format('embedded-opentype'),
-		url('../fonts/icomoon.woff?3ee7eq') format('woff'),
-		url('../fonts/icomoon.ttf?3ee7eq') format('truetype'),
-		url('../fonts/icomoon.svg?3ee7eq#icomoon') format('svg');
+	src:url('../fonts/icomoon.eot?541cj1');
+	src:url('../fonts/icomoon.eot?#iefix541cj1') format('embedded-opentype'),
+		url('../fonts/icomoon.woff?541cj1') format('woff'),
+		url('../fonts/icomoon.ttf?541cj1') format('truetype'),
+		url('../fonts/icomoon.svg?541cj1#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -24,6 +24,9 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.icon-info:before {
+	content: "\e602";
+}
 .icon-pin-alt:before {
 	content: "\e603";
 }
@@ -62,6 +65,7 @@
 }
 
 
+
 /* apply a natural box layout model to all elements, but allowing components to change */
 *, *:before, *:after {
   box-sizing: inherit;
@@ -91,6 +95,58 @@
 .invisible {
 	visibility: hidden;
 }
+
+/* ====================================*/
+/* ABOUT VIEW MOBILE */
+/* ====================================*/
+
+#about {
+	position: fixed;
+	background-color: rgba(0,0,0,.8);
+	width: 100%;
+	height: 100%;
+	padding: 10%;
+	letter-spacing: 1px;
+	color: #FFFFFF;
+	z-index: 10000;
+	font-size: 12px;
+	overflow: scroll;
+}
+
+#about::-webkit-scrollbar { 
+  display: none; 
+}
+
+#about h2 {
+	font-size: 2em;
+	margin: 0 0 1em 0;
+}
+
+#about h4 {
+	margin: 1.5em 0;
+}
+
+#about p {
+	font-size: 1.25em;
+	line-height: 1.5em;
+	margin: 1em 0 0 0;
+	max-width: 34rem;
+}
+
+#about a {
+	color: #00CCFF;
+	font-weight: 400;
+}
+
+#about p.icon-arrow {
+	margin: .75em 0 0 0;
+	font-size: 2em;
+	color: #00CCFF;
+}
+
+
+
+
 
 /* ====================================*/
 /* COLOR PICKER VIEW MOBILE */
@@ -160,7 +216,7 @@ nav {
 }
 
 #control-bar::-webkit-scrollbar { 
-    display: none; 
+  display: none; 
 }
 
 .control, .control-module {
@@ -168,7 +224,8 @@ nav {
 	text-align: center;
 }
 
-.control-module:last-child {
+.control-module:last-child, 
+.control:last-child {
 	margin-bottom: 5rem;
 }
 
@@ -204,6 +261,10 @@ nav {
 
 .icon-globe {
 	font-size: 1.4rem;
+}
+
+.icon-info {
+	font-size: 1.35rem;
 }
 
 .tooltip {
@@ -483,6 +544,35 @@ form {
 
 @media only screen and (min-width: 767px) {
 
+
+/* ====================================*/
+/* ABOUT VIEW DESKTOP */
+/* ====================================*/
+
+#about {
+	font-size: 16px;
+}
+
+#about a {
+	text-decoration: none;
+}
+
+#about a:hover {
+	text-decoration: underline;
+}
+
+#about p.icon-arrow {
+	color: #FFFFFF;
+	font-size: 2em;
+	opacity: .5;
+}
+
+#about p.icon-arrow:hover {
+	cursor: pointer;
+	color: #00CCFF;
+	opacity: 1;
+}
+
 /* ====================================*/
 /* COLOR PICKER VIEW DESKTOP */
 /* ====================================*/
@@ -564,6 +654,10 @@ form {
 	font-size: 2rem;
 }
 
+.icon-info {
+	font-size: 1.9rem;
+}
+
 .tooltip-parent:hover .tooltip {
 	display: block;
 }
@@ -595,6 +689,10 @@ form {
 
 .tooltip.saturation {
 	top: 2.5rem;
+}
+
+.tooltip.about {
+	top: -.7rem;
 }
 
 .color-bar {
