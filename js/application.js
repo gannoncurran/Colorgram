@@ -194,12 +194,10 @@ Colorgram.Comm = (function() {
 		},
 
 		getRecents: function() {
-			// console.log("get recents via ajax from server fired")
 			cgReadAll()
 		},
 
 		postNew: function (colorgram) {
-			// console.log("posting new colorgram to database")
 			cgCreate(colorgram)
 		}
 
@@ -222,13 +220,10 @@ Colorgram.Geo = (function() {
 		})
 
 		request.done(function(ajaxResponse) {
-			console.log(ajaxResponse)
 		  if (ajaxResponse["status"] === "OK") {
 		  	var place = selectPreferredPlace(ajaxResponse["results"])
-		  	console.log(place)
 		  	Colorgram.View.setPlace(place)
 		  } else {
-		  	console.log("Lat: "+lat+", Lng:"+lng)
 		  	Colorgram.View.setPlace("Lat: "+lat+", Lng:"+lng)
 		  }
 
@@ -241,9 +236,6 @@ Colorgram.Geo = (function() {
 	}
 
 	var selectPreferredPlace = function(places) {
-
-		console.log("preferred: ", places)
-		console.log("length: ", places.length)
 
 		if (places.length === 1) return places[0]["formatted_address"]
 
@@ -899,12 +891,10 @@ Colorgram.View = (function() {
 
 	    },
 	    function(error) {
-	    	console.log(error)
 				$fieldPlace.prop("placeholder", "You'll have to type ;(")
 	    })
 		} else { 
 			$fieldPlace.prop("placeholder", "You'll have to type. :(")
-	    console.log("Geolocation is not supported by this browser.")
 		}
 	}
 
@@ -938,16 +928,12 @@ Colorgram.View = (function() {
 
 Colorgram.initialize = function() {
 
-	// console.log("initializing AWS DynamoDB")
 	Colorgram.Comm.init()
 
-	// console.log("retrieving recent colorgrams from AWS DynamoDB")
 	Colorgram.Comm.getRecents()
 
-	// console.log("Initializing view")
 	Colorgram.View.init()
 
-	// console.log("Initializing pac")
 	Colorgram.Map.initPac()
 
 }
