@@ -211,7 +211,7 @@ Colorgram.Geo = (function() {
 		  url:      ""+baseURL+lat+","+lng+"&key="+key+"&result_type="+resultTypes, 
 		  get:      "GET",
 		  dataType: "json",
-		  timeout:  7000,
+		  timeout:  8000,
 		})
 
 		request.done(function(ajaxResponse) {
@@ -804,8 +804,9 @@ Colorgram.View = (function() {
 	var autoLocate = function() {
 		var latLng
 		var place
-		$fieldPlace.prop("placeholder", "Getting Location...")
 		if (navigator.geolocation) {
+
+			$fieldPlace.prop("placeholder", "Getting Location...")
 
 			$fieldPlaceLocate.off("mouseenter")
 			$fieldPlaceLocate.off("mouseleave")
@@ -815,15 +816,15 @@ Colorgram.View = (function() {
 		    colorgramLat = position.coords.latitude
 		    colorgramLng = position.coords.longitude
 
-	    	place = Colorgram.Geo.getPlace(colorgramLat, colorgramLng)
-	    	$fieldPlace.val(place)
+	    	Colorgram.Geo.getPlace(colorgramLat, colorgramLng)
+	    	// $fieldPlace.val(place)
 
-		    $fieldPlaceLocate.on("mouseenter", function(e) {
-		    	$fieldPlace.prop("placeholder", "Locate Me!")
-		    })
-		    $fieldPlaceLocate.on("mouseleave", function(e) {
-		    	$fieldPlace.prop("placeholder", "What's your city?")
-		    })
+		    // $fieldPlaceLocate.on("mouseenter", function(e) {
+		    // 	$fieldPlace.prop("placeholder", "Locate Me!")
+		    // })
+		    // $fieldPlaceLocate.on("mouseleave", function(e) {
+		    // 	$fieldPlace.prop("placeholder", "What's your city?")
+		    // })
 
 	    },
 	    function(error) {
@@ -836,6 +837,14 @@ Colorgram.View = (function() {
 
 	var setPlaceFieldValue = function(place) {
 		$fieldPlace.prop("value", place)
+		$fieldPlace.prop("placeholder", "What's your city?")
+
+		$fieldPlaceLocate.on("mouseenter", function(e) {
+			$fieldPlace.prop("placeholder", "Locate Me!")
+		})
+		$fieldPlaceLocate.on("mouseleave", function(e) {
+			$fieldPlace.prop("placeholder", "What's your city?")
+		})
 	}
 
 	$(document).ready(function() {
