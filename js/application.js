@@ -103,7 +103,8 @@ Colorgram.Comm = (function() {
 			sslEnabled: true,
 			endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
 		}
-		AWS.config.update({accessKeyId: 'AKIAIVW7GHJJMH2LCLQQ', secretAccessKey: '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'})
+
+		AWS.config.update({accessKeyId: Colorgram.Access.k, secretAccessKey: Colorgram.Access.s})
 		AWS.config.region = 'us-west-2'
 		colorgramDB = new AWS.DynamoDB(dbOptions);
 	}
@@ -117,10 +118,6 @@ Colorgram.Comm = (function() {
 	    		AttributeValueList: [{'N':'0'}],
 	    		ComparisonOperator: 'EQ'
 	    	},
-	    	// 'cgTimestamp': {
-	    	// 	AttributeValueList: [{'N':''+(Date.now()-86400000)}, {'N':''+Date.now()}],
-	    	// 	ComparisonOperator: 'BETWEEN'
-	    	// }
 	    },
 	    Limit: '100'
 		}
