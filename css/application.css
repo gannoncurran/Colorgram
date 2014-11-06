@@ -682,6 +682,7 @@ form {
 .button:hover {
 	opacity: 1;
 	background-color: #FFFFFF;
+	cursor: pointer;
 }
 
 .button:active {
