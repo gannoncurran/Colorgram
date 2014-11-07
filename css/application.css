@@ -144,10 +144,6 @@
 	color: #00CCFF;
 }
 
-
-
-
-
 /* ====================================*/
 /* COLOR PICKER VIEW MOBILE */
 /* ====================================*/
@@ -226,7 +222,7 @@ nav {
 
 .control-module:last-child, 
 .control:last-child {
-	margin-bottom: 5rem;
+	margin-bottom: 6rem;
 }
 
 .bumper {
@@ -286,18 +282,6 @@ nav {
 	text-align: right;
 }
 
-.detail .buttons {
-	text-align: left;
-}
-
-.detail .return {
-	float: left;
-}
-
-.detail .select {
-	float: right;
-}
-
 .button {
 	vertical-align: middle;
 	display: inline-block;
@@ -313,7 +297,7 @@ nav {
 	background-color: #FFFFFF;
 }
 
-.expand, .select, .return, .submit {
+.select, .submit {
 	color: #000000;
 	font-size: 4rem;
 }
@@ -321,21 +305,6 @@ nav {
 .button span {
 	vertical-align: -14%;
 }
-
-.expand {
-}
-
-.select {
-}
-
-.return {
-	font-size: 3.75rem;
-}
-
-.return span {
-	vertical-align: -13%;
-}
-
 
 /* ====================================*/
 /* SUBMIT VIEW MOBILE */
@@ -530,16 +499,6 @@ form {
 	background-color: #2b2b2b;
 }
 
-/*#map {
-	cursor: pointer;
-	height: 100%;
-	width: 400%;
-	background-image: url("../images/map.svg");
-	background-size: contain;
-	background-repeat: no-repeat;
-	position: relative;
-}*/
-
 /* ====================================*/
 /* ====================================*/
 /* MEDIA QUERIES */
@@ -547,7 +506,6 @@ form {
 /* ====================================*/
 
 @media only screen and (min-width: 767px) {
-
 
 /* ====================================*/
 /* ABOUT VIEW DESKTOP */
@@ -700,7 +658,7 @@ form {
 }
 
 .color-bar {
-	height: 11rem;
+	height: 16rem;
 }
 
 .buttons {
@@ -724,14 +682,13 @@ form {
 .button:hover {
 	opacity: 1;
 	background-color: #FFFFFF;
+	cursor: pointer;
 }
 
 .button:active {
 	opacity: .8;
 	background-color: #FFFFFF;
 }
-
-
 
 /* ====================================*/
 /* SUBMIT VIEW DESKTOP */

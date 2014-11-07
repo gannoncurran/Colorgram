@@ -23,15 +23,17 @@ Colorgram.Map = (function() {
 	var setPins = function(colorgrams) {
 		var pin
 		var pinBounds = new google.maps.LatLngBounds();
-
-		colorgrams.forEach(function(cg){
-			var scaleFactor = Math.sqrt((cg.popularity + 1))
+		var maxPins = 100
+		for (var i = colorgrams.length-1; i > -1; i --) {
+			var cg = colorgrams[i]
+			var scaleFactor = 30 + ((maxPins) * .5)
+			maxPins--
 			var browserWidth = $(window).width()
 			var latlng = new google.maps.LatLng(cg.loc.lat, cg.loc.lng)
 			var markerOptions = {
 				icon: {
 		      path: google.maps.SymbolPath.CIRCLE,
-		      scale: (browserWidth * .01) * scaleFactor,
+		      scale: (browserWidth * .0006) * scaleFactor,
 		      strokeColor: "#FFFFFF",
 		      strokeWeight: 0,
 		      fillColor: "hsl(" + cg.hue + "," + cg.sat + "%," + cg.lum + "%)",
@@ -45,8 +47,7 @@ Colorgram.Map = (function() {
 			pin = new google.maps.Marker(markerOptions)
 	    pins.push(pin)
 	    pinBounds.extend(latlng)
-		})
-
+		}
 	  bounds = pinBounds
 	  map.fitBounds(bounds)
 	  pinBounds = []
@@ -84,10 +85,6 @@ Colorgram.Map = (function() {
 		  	Colorgram.View.setLatLng(lat, lng)
 		  })
 	  }
-
-	  // getPac: function() {
-	  // 	return pac
-	  // }
 
 	}
 	
@@ -214,7 +211,7 @@ Colorgram.Geo = (function() {
 		  url:      ""+baseURL+lat+","+lng+"&key="+key+"&result_type="+resultTypes, 
 		  get:      "GET",
 		  dataType: "json",
-		  timeout:  7000,
+		  timeout:  8000,
 		})
 
 		request.done(function(ajaxResponse) {
@@ -311,7 +308,7 @@ Colorgram.View = (function() {
 			mobileView = false,
 			pickerSat = 50,
 			pickerLum = 50,
-			cbBaseInterval = 20
+			cbBaseInterval = 6
 
 	var	currentColorPick = {
 		hue: 0,
@@ -487,17 +484,13 @@ Colorgram.View = (function() {
 			browserEvent: "click",
 			fn: function(e) {
 				e.preventDefault()
-				var baseColorBar = $(e.target).parents(".color-bar").first()
+				var ColorBar = $(e.target).parents(".color-bar").first()
 				var classes = e.target.parentNode.className
 				if (classes.indexOf("select") > -1) {
-					currentColorPick.hue = baseColorBar.data("hue")
+					currentColorPick.hue = ColorBar.data("hue")
 					currentColorPick.sat = pickerSat
 					currentColorPick.lum = pickerLum
 					setViewMode.form()
-				} else if (classes.indexOf("return") > -1) {
-					collapseColorBarsDetail(baseColorBar.data("base"))
-				} else if (classes.indexOf("expand") > -1) {
-					expandColorBars(baseColorBar)
 				}
 			}
 		},
@@ -572,15 +565,12 @@ Colorgram.View = (function() {
 
 	var getTemplates = function() {
 		var colorBar 							= $('#color-bar-template')
-		var colorBarDetail 				= $('#color-bar-detail-template')
 		var recentsTile 					= $('#recents-tile-template')
 
 		Templates.colorBar 				= $.trim(colorBar.html())
-		Templates.colorBarDetail 	= $.trim(colorBarDetail.html())
 		Templates.recentsTile 	 	= $.trim(recentsTile.html())
 
 		$(colorBar).remove()
-		$(colorBarDetail).remove()
 		$(recentsTile).remove()
 	}
 
@@ -723,8 +713,10 @@ Colorgram.View = (function() {
 			bar = $(Templates.colorBar)
 			$(bar).css("background-color", "hsl(" + hue + "," + sat + "%," + lum + "%)")
 			$(bar).attr("data-hue", hue)
-			$(bar).hide().appendTo(viewComponents.picker.mountPoint).delay(fadeDelay).fadeIn(500)
-			fadeDelay += 75
+			$(bar).hide().appendTo(viewComponents.picker.mountPoint).delay(
+				fadeDelay > 1000 ? 1000 : fadeDelay
+				).fadeIn(500)
+			fadeDelay += 100
 		}
 	}
 
@@ -764,65 +756,9 @@ Colorgram.View = (function() {
 		}
 	}
 
-	var expandColorBars = function(baseColorBar) {
-		var baseHue = $(baseColorBar).data("hue")
-		var detailBar = $(Templates.colorBarDetail)
-		var barHeight = $(".color-bar").first().height()
-		var anchorIndex = $(baseColorBar).index() + 1
-
-		$(detailBar).attr("data-hue", baseHue)
-		$(detailBar).attr("data-base", baseHue)
-
-		$(detailBar).css("background-color", "hsl(" + baseHue + "," + pickerSat + "%," + pickerLum + "%)")
-		$(baseColorBar).replaceWith(detailBar)
-
-		var $anchor = $("#color-bars .color-bar:nth-child("+anchorIndex+")")
-
-		for (var hue = baseHue + cbBaseInterval - 1 ; hue > baseHue; hue --) {
-			detailBar = $(Templates.colorBarDetail)
-			$(detailBar).attr("data-hue", hue)
-			$(detailBar).attr("data-base", baseHue)
-			$(detailBar).css("background-color", "hsl(" + hue + "," + pickerSat + "%," + pickerLum + "%)")
-			if (mobileView) {
-				$(detailBar).insertAfter($anchor)
-			} else {
-				$(detailBar).height(0)
-				$(detailBar).insertAfter($anchor).animate({height: barHeight}, 800)
-			}
-		}
-	}
-
-	var collapseColorBarsDetail = function (baseHue) {
-		var $detailColorBars = $('[data-base="' + baseHue + '"]')
-		var $baseColorBar = $detailColorBars.first()
-		// TODO: USE BASEOFFSET BELOW TO CHECK FOR BAR POSITION EDGECASES THAT 
-		// WILL BREAK COLLAPSE FUNCTIONALITY BECAUSE OF INFINITIE SCROLL
-		// var	baseOffset =$baseColorBar.offset()
-				$detailColorBars = $detailColorBars.not($baseColorBar)
-		var $baseBar = $(Templates.colorBar)
-		var scrollOffset = ($win.height() / 2) - ($baseColorBar.height() / 2)
-
-		$baseBar.attr("data-hue", baseHue)
-		$baseBar.css("background-color", "hsl(" + baseHue + "," + pickerSat + "%," + pickerLum + "%)")
-		$baseColorBar.replaceWith($baseBar)
-
-		if (mobileView) {
-			$detailColorBars.remove()
-			$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
-		} else {
-			$detailColorBars.animate({height: 0}, 500, function() {
-				$detailColorBars.remove()
-			})
-			$win.scrollTo( $baseBar, 500, {axis: 'y', offset: -scrollOffset} )
-		}
-	}
-
 	var submitColorgram = function() {
-		// fix this with a global that gets set when the google place box updates!!
 		var pacLat = colorgramLat
-		// var pacLat = Colorgram.Map.getPac().getPlaces()[0].geometry.location.k
 		var pacLng = colorgramLng
-		// var pacLng = Colorgram.Map.getPac().getPlaces()[0].geometry.location.B
 		var cgName = $("#colorgram-name-field").val()
 		var cgPlace = $("#colorgram-place-field").val()
 		var d = new Date()
@@ -850,7 +786,6 @@ Colorgram.View = (function() {
 		$(".tile").remove()
 		for (var i = colorgrams.length-1; i > -1; i --) {
 			var c = colorgrams[i]
-			// name, when.date, when.time, place.name, hue, sat, lum 
 			var tile = $(Templates.recentsTile)
 			$(tile).css("background-color", generateBGColor(c.hue, c.sat, c.lum))
 			$(tile).children(".color-name").text(c.name)
@@ -859,7 +794,9 @@ Colorgram.View = (function() {
 			$(tile).children(".time").text(c.when.time)
 			$(tile).children(".location").text(c.place.name)
 			$(tile).children(".color-build").text("HSL: "+c.hue+", "+c.sat+"%, "+c.lum+"%")
-			$(tile).hide().appendTo($(viewComponents.recents.mountPoint)).delay(fadeDelay).fadeIn(500)
+			$(tile).hide().appendTo($(viewComponents.recents.mountPoint)).delay(
+				(fadeDelay > 675) ? 675 : fadeDelay
+				).fadeIn(500)
 			fadeDelay += 75
 		}	
 	}
@@ -867,9 +804,9 @@ Colorgram.View = (function() {
 	var autoLocate = function() {
 		var latLng
 		var place
-		$fieldPlace.prop("placeholder", "Getting Location...")
 		if (navigator.geolocation) {
 
+			$fieldPlace.prop("placeholder", "Getting Location...")
 			$fieldPlaceLocate.off("mouseenter")
 			$fieldPlaceLocate.off("mouseleave")
 
@@ -878,15 +815,15 @@ Colorgram.View = (function() {
 		    colorgramLat = position.coords.latitude
 		    colorgramLng = position.coords.longitude
 
-	    	place = Colorgram.Geo.getPlace(colorgramLat, colorgramLng)
-	    	$fieldPlace.val(place)
+	    	Colorgram.Geo.getPlace(colorgramLat, colorgramLng)
+	    	// $fieldPlace.val(place)
 
-		    $fieldPlaceLocate.on("mouseenter", function(e) {
-		    	$fieldPlace.prop("placeholder", "Locate Me!")
-		    })
-		    $fieldPlaceLocate.on("mouseleave", function(e) {
-		    	$fieldPlace.prop("placeholder", "What's your city?")
-		    })
+		    // $fieldPlaceLocate.on("mouseenter", function(e) {
+		    // 	$fieldPlace.prop("placeholder", "Locate Me!")
+		    // })
+		    // $fieldPlaceLocate.on("mouseleave", function(e) {
+		    // 	$fieldPlace.prop("placeholder", "What's your city?")
+		    // })
 
 	    },
 	    function(error) {
@@ -899,6 +836,14 @@ Colorgram.View = (function() {
 
 	var setPlaceFieldValue = function(place) {
 		$fieldPlace.prop("value", place)
+		$fieldPlace.prop("placeholder", "What's your city?")
+
+		$fieldPlaceLocate.on("mouseenter", function(e) {
+			$fieldPlace.prop("placeholder", "Locate Me!")
+		})
+		$fieldPlaceLocate.on("mouseleave", function(e) {
+			$fieldPlace.prop("placeholder", "What's your city?")
+		})
 	}
 
 	$(document).ready(function() {
