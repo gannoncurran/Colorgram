@@ -807,7 +807,6 @@ Colorgram.View = (function() {
 		if (navigator.geolocation) {
 
 			$fieldPlace.prop("placeholder", "Getting Location...")
-
 			$fieldPlaceLocate.off("mouseenter")
 			$fieldPlaceLocate.off("mouseleave")
 
