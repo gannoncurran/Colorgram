@@ -116,6 +116,7 @@ Colorgram.Comm = (function() {
 	    		ComparisonOperator: 'EQ'
 	    	},
 	    },
+	    ScanIndexForward: false,
 	    Limit: '100'
 		}
 		colorgramDB.query(getRecent, function(err, data) {
@@ -129,7 +130,8 @@ Colorgram.Comm = (function() {
 
 	var parseResponse = function(r) {
 		var cleanGrams = []
-		for (var i in r) {
+		for ( i = r.length -1; i > -1; i --) {
+		// for (var i in r) {
 			var parsedCg = {
 				userId: Number(r[i].userId.N),
 				cgTimestamp: Number(r[i].cgTimestamp.N),
