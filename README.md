@@ -1,6 +1,7 @@
-Colorgram
+#Colorgram
 
 How are you feeling right now? Express it in color.
+
 Colorgram is the brainchild of Detroit based artist Aleks Pollner, and Seattle photographer Charlie Schuck.
 
 Colorgram is a thick-client “serverless” Javascript app.
